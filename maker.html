@@ -912,7 +912,7 @@ function toggleSkill(id) {
 // ── 스킬 / 개성 로드 ─────────────────────────────────────────────────────────
 async function loadSkills() {
   try {
-    const res = await fetch(`${API}/character/meta/maker-skills`);
+    const res = await fetch(`${API}/character/meta/maker-skills`, { headers: { 'ngrok-skip-browser-warning': '1', } });
     const data = await res.json();
     skillData = data.skills || [];
     rebuildTabs();
@@ -924,7 +924,7 @@ async function loadSkills() {
 
 async function loadPersonality() {
   try {
-    const res = await fetch(`${API}/character/meta/maker-pool`);
+    const res = await fetch(`${API}/character/meta/maker-pool`, { headers: { 'ngrok-skip-browser-warning': '1', } });
     const data = await res.json();
     personalityData = data.pool || [];
     renderPersonality();
@@ -1028,8 +1028,7 @@ async function createCharacter() {
   try {
     const res  = await fetch(`${API}/character/maker`, {
       method: 'POST',
-      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
-                 },
+      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(body),
     });
     const data = await res.json();

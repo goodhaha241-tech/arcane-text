@@ -511,58 +511,53 @@ body {
 .page-panel { display: none; }
 .page-panel.active { display: block; }
 
-/* ── 상점 ──────────────────────────────── */
-.shop-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-.shop-card {
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow); transition: all .2s;
-}
-.shop-card:hover { border-color: var(--border2); box-shadow: var(--shadow2); }
-.shop-card-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-.shop-icon {
-  width: 42px; height: 42px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.3rem; flex-shrink: 0;
-}
-.shop-icon-scroll  { background: #faf6ec; }
-.shop-icon-recruit { background: var(--blue-bg); }
-.shop-icon-enhance { background: var(--green-bg); }
-.shop-item-name { font-size: .9rem; font-weight: 700; margin-bottom: 2px; }
-.shop-item-desc { font-size: .72rem; color: var(--text2); line-height: 1.5; }
-.shop-item-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
-}
-.shop-price { font-size: .85rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 4px; }
-.shop-refund { font-size: .68rem; color: var(--text3); margin-left: 6px; }
-.shop-buy-btn {
-  padding: 7px 18px; border: none; border-radius: 7px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff; font-family: 'Noto Sans KR', sans-serif;
-  font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .18s;
-}
-.shop-buy-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(181,69,27,.25); }
-.shop-buy-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-.shop-result-overlay {
+/* ── 강화 모달 ─────────────────────────── */
+.upgrade-modal-overlay {
   position: fixed; inset: 0; background: rgba(28,25,23,.5);
   display: flex; align-items: center; justify-content: center;
   z-index: 150; opacity: 0; pointer-events: none; transition: opacity .25s;
 }
-.shop-result-overlay.show { opacity: 1; pointer-events: all; }
-.shop-result-card {
-  background: var(--surface); border-radius: 14px; padding: 30px 40px;
-  text-align: center; box-shadow: var(--shadow2); min-width: 280px;
+.upgrade-modal-overlay.show { opacity: 1; pointer-events: all; }
+.upgrade-modal-card {
+  background: var(--surface); border-radius: 14px; padding: 28px 32px;
+  box-shadow: var(--shadow2); width: 340px;
   transform: scale(.9); transition: transform .25s;
 }
-.shop-result-overlay.show .shop-result-card { transform: scale(1); }
-.shop-result-icon  { font-size: 2.5rem; margin-bottom: 10px; }
-.shop-result-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
-.shop-result-msg   { font-size: .82rem; color: var(--text2); margin-bottom: 6px; }
-.shop-result-gold  { font-size: .78rem; color: var(--gold); font-weight: 600; margin-bottom: 20px; }
-.shop-result-close { padding: 8px 28px; background: var(--accent); color: #fff; border: none; border-radius: 7px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-size: .82rem; font-weight: 600; }
-.enhance-select-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; text-align: left; }
-.enhance-select-item { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .15s; font-size: .82rem; }
-.enhance-select-item:hover { border-color: var(--accent); background: #fdf8f6; }
+.upgrade-modal-overlay.show .upgrade-modal-card { transform: scale(1); }
+.upgrade-modal-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; margin-bottom: 18px; }
+.slider-row { margin-bottom: 14px; }
+.slider-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: .8rem; font-weight: 600; margin-bottom: 5px;
+}
+.slider-label span { color: var(--accent); font-family: 'Cinzel', serif; }
+.slider-input {
+  width: 100%; height: 6px; border-radius: 3px;
+  -webkit-appearance: none; appearance: none;
+  background: var(--bg2); outline: none; cursor: pointer;
+}
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+  box-shadow: 0 1px 4px rgba(181,69,27,.3);
+}
+.upgrade-points-left {
+  text-align: center; font-size: .82rem; color: var(--text2);
+  margin-bottom: 16px; padding: 8px; background: var(--bg2);
+  border-radius: 7px;
+}
+.upgrade-points-left strong { color: var(--accent); font-family: 'Cinzel', serif; }
+.upgrade-modal-btns { display: flex; gap: 8px; }
+.upgrade-modal-btn {
+  flex: 1; padding: 9px; border: none; border-radius: 7px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: .82rem;
+  font-weight: 600; cursor: pointer; transition: all .18s;
+}
+.upgrade-modal-btn.confirm { background: var(--accent); color: #fff; }
+.upgrade-modal-btn.confirm:hover { background: var(--accent2); }
+.upgrade-modal-btn.confirm:disabled { opacity: .4; cursor: not-allowed; }
+.upgrade-modal-btn.cancel { background: var(--bg2); color: var(--text2); }
+.upgrade-modal-btn.cancel:hover { background: var(--border); }
 
 /* ── 토스트 ────────────────────────────── */
 .toast {
@@ -660,7 +655,6 @@ body {
       </div>
     </div><!-- /panel-upgrade -->
 
-    <!-- 상점 패널 -->
     <div class="page-panel" id="panel-shop">
       <div class="shop-grid" id="shop-grid">
         <div style="text-align:center;padding:32px;color:var(--text3);">로딩 중...</div>
@@ -828,364 +822,124 @@ function renderUpgradePanel() {
 }
 
 // ── 강화 실행 ────────────────────────────────────────────────────────────────
-async function doUpgrade(charId, nextStage, cost) {
-  // 현재 골드 확인
-  const goldEl = document.getElementById('gold-amount');
+// 강화 모달 상태
+let _upgradeCharId = null, _upgradeNextStage = null, _upgradeCost = null;
+const TOTAL_PTS = 15;
+
+function doUpgrade(charId, nextStage, cost) {
+  const goldEl  = document.getElementById('gold-amount');
   const curGold = parseInt((goldEl.textContent || '0').replace(/[^0-9]/g, '')) || 0;
-  if (curGold < cost) {
-    showToast(`골드가 부족합니다. (${cost}G 필요 / ${curGold}G 보유)`);
-    return;
+  if (curGold < cost) { showToast(`골드 부족 (${cost}G 필요 / ${curGold}G 보유)`); return; }
+
+  _upgradeCharId    = charId;
+  _upgradeNextStage = nextStage;
+  _upgradeCost      = cost;
+
+  // 슬라이더 초기화
+  ['str','agi','int','wis'].forEach(s => {
+    document.getElementById(`slider-${s}`).value = 0;
+    document.getElementById(`val-${s}`).textContent = 0;
+  });
+  document.getElementById('points-left').textContent = TOTAL_PTS;
+  document.getElementById('upgrade-confirm-btn').disabled = true;
+  document.getElementById('upgrade-modal-title').textContent =
+    `강화 ${nextStage}단계 — ${cost}G`;
+  document.getElementById('upgrade-modal-overlay').classList.add('show');
+}
+
+function onSlider() {
+  const str = +document.getElementById('slider-str').value;
+  const agi = +document.getElementById('slider-agi').value;
+  const int_ = +document.getElementById('slider-int').value;
+  const wis = +document.getElementById('slider-wis').value;
+  const used = str + agi + int_ + wis;
+  const left = TOTAL_PTS - used;
+
+  // 남은 포인트 초과 방지
+  if (left < 0) {
+    // 마지막으로 변경된 슬라이더를 줄임 (이벤트 타깃 방식 대신 전체 재조정)
+    const excess = -left;
+    // 각 슬라이더를 현재값에서 excess만큼 줄이기 (비율로)
+    const total = str + agi + int_ + wis;
+    ['str','agi','int','wis'].forEach(s => {
+      const el = document.getElementById(`slider-${s}`);
+      const cur = +el.value;
+      el.value = Math.max(0, cur - Math.ceil(excess * cur / total));
+    });
   }
 
-  // 강화 포인트 입력 UI (간단한 prompt 방식)
-  const POINTS = 15;
-  const statNames = { str_stat:'힘', agi_stat:'민첩', int_stat:'지능', wis_stat:'지혜' };
-  const alloc = { str_add:0, int_add:0, wis_add:0, agi_add:0 };
+  const s2 = +document.getElementById('slider-str').value;
+  const a2 = +document.getElementById('slider-agi').value;
+  const i2 = +document.getElementById('slider-int').value;
+  const w2 = +document.getElementById('slider-wis').value;
+  const left2 = TOTAL_PTS - (s2+a2+i2+w2);
 
-  // 간단히 균등 배분 (3,4,4,4) 기본값으로 시작 — 추후 UI 개선 가능
-  const val = prompt(
-    `강화 ${nextStage}단계 — ${POINTS}포인트 배분\n\n` +
-    `형식: 힘,민첩,지능,지혜 (합계 ${POINTS})\n예: 4,4,4,3`,
-    '4,4,4,3'
-  );
-  if (!val) return;
+  document.getElementById('val-str').textContent = s2;
+  document.getElementById('val-agi').textContent = a2;
+  document.getElementById('val-int').textContent = i2;
+  document.getElementById('val-wis').textContent = w2;
+  document.getElementById('points-left').textContent = left2;
+  document.getElementById('upgrade-confirm-btn').disabled = left2 !== 0;
+}
 
-  const parts = val.split(',').map(s => parseInt(s.trim()) || 0);
-  if (parts.length !== 4) { showToast('형식이 올바르지 않습니다. (힘,민첩,지능,지혜)'); return; }
-  const [str_add, agi_add, int_add, wis_add] = parts;
-  if (str_add + agi_add + int_add + wis_add !== POINTS) {
-    showToast(`합계가 ${POINTS}포인트여야 합니다. (현재: ${str_add+agi_add+int_add+wis_add})`);
-    return;
-  }
+function closeUpgradeModal() {
+  document.getElementById('upgrade-modal-overlay').classList.remove('show');
+}
+
+async function confirmUpgrade() {
+  const str_add = +document.getElementById('slider-str').value;
+  const agi_add = +document.getElementById('slider-agi').value;
+  const int_add = +document.getElementById('slider-int').value;
+  const wis_add = +document.getElementById('slider-wis').value;
+
+  closeUpgradeModal();
 
   try {
-    const res = await fetch(`${API}/character/${charId}/upgrade`, {
+    const res = await fetch(`${API}/character/${_upgradeCharId}/upgrade`, {
       method: 'PATCH',
       headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
       body: JSON.stringify({ str_add, int_add, wis_add, agi_add }),
     });
     const data = await res.json();
     if (!res.ok) { showToast(data.detail || '강화 실패'); return; }
-
-    showToast(`✓ ${data.name} 강화 완료! (${cost}G 소비)`);
+    showToast(`✓ ${data.name} 강화 완료! (${_upgradeCost}G 소비)`);
     await loadCharacters();
-loadGold();
     await loadGold();
     renderUpgradePanel();
-  } catch {
-    showToast('서버 오류가 발생했습니다.');
-  }
+  } catch { showToast('서버 오류'); }
 }
-
-// ── 상태 ────────────────────────────────────────────────────────────────────
-let characters = [];
-let party      = [null, null, null];   // 파티 슬롯 3개
-
-// ── 토스트 ──────────────────────────────────────────────────────────────────
-function showToast(msg, dur = 2000) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), dur);
-}
-
-// ── 캐릭터 로드 ─────────────────────────────────────────────────────────────
-async function loadCharacters() {
-  try {
-    const res = await fetch(`${API}/character/me`, {
-      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}` }
-    });
-    if (res.status === 401) { location.href = 'auth.html'; return; }
-    const data = await res.json();
-    characters = data.characters || [];
-    renderCharacters();
-  } catch {
-    showToast('캐릭터를 불러오지 못했습니다.');
-    document.getElementById('char-grid').innerHTML =
-      `<div class="empty-state">
-        <div class="empty-title">서버에 연결할 수 없습니다</div>
-        <div class="empty-sub">백엔드가 실행 중인지 확인해주세요</div>
-      </div>`;
-  }
-}
-
-// ── 렌더링 ──────────────────────────────────────────────────────────────────
-function renderCharacters() {
-  const grid = document.getElementById('char-grid');
-  const cnt  = characters.length;
-  document.getElementById('char-count').textContent =
-    `${cnt}명의 캐릭터 보유 중`;
-
-  if (cnt === 0) {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">⚔</div>
-        <div class="empty-title">아직 캐릭터가 없어요</div>
-        <div class="empty-sub">오른쪽 상단 버튼으로 첫 캐릭터를 만들어보세요</div>
-      </div>`;
-    return;
-  }
-
-  const MAX_STAT = 70;
-  const cards = characters.map((c, i) => {
-    const inParty   = party.findIndex(p => p?.id === c.id);
-    const isRecruited = c.character_type === 'recruited';
-    const initial   = c.name.charAt(0);
-    const hp        = c.hp_max || 10 * ((c.str_stat || 0) + (c.agi_stat || 0));
-    const masteries = (c.mastery_types || []).join(' · ') || '무속성';
-    const growthLabel = ['초기', '강화 1회', '강화 2회'][c.growth_stage] || '초기';
-
-    const partyBadge = inParty >= 0
-      ? `<span class="char-badge badge-party">파티 ${inParty + 1}번</span>` : '';
-    const typeBadge  = isRecruited
-      ? `<span class="char-badge badge-recruited" style="top:${inParty>=0?'32':'10'}px">영입</span>`
-      : `<span class="char-badge badge-maker" style="top:${inParty>=0?'32':'10'}px">메이커</span>`;
-
-    const statBarColor = (val) => {
-      const pct = Math.round((val / MAX_STAT) * 100);
-      return `width:${pct}%`;
-    };
-
-    return `
-    <div class="char-card ${inParty >= 0 ? 'in-party' : ''}"
-         onclick="toggleParty(${c.id})"
-         style="animation-delay:${i * 0.04}s">
-      ${partyBadge}${typeBadge}
-      <div class="char-avatar ${isRecruited ? 'avatar-recruited' : 'avatar-maker'}">${initial}</div>
-      <div class="char-name">${c.name}</div>
-      <div class="char-meta">${masteries} · ${growthLabel}</div>
-      <div class="stat-bars">
-        ${[['힘', c.str_stat], ['민', c.agi_stat], ['지', c.int_stat], ['혜', c.wis_stat]].map(([l, v]) => `
-          <div class="stat-row">
-            <span class="stat-label">${l}</span>
-            <div class="stat-bar-bg"><div class="stat-bar-fill" style="${statBarColor(v)}"></div></div>
-            <span class="stat-val">${v}</span>
-          </div>`).join('')}
-      </div>
-      <div class="char-hp">
-        <div class="char-hp-dot"></div>
-        HP ${hp.toLocaleString()}
-      </div>
-    </div>`;
-  });
-
-  // 새 캐릭터 추가 버튼
-  cards.push(`
-    <button class="char-card-new" onclick="location.href='maker.html'">
-      <div class="new-icon">+</div>
-      <span class="new-label">새 캐릭터 만들기</span>
-    </button>`);
-
-  grid.innerHTML = cards.join('');
-}
-
-// ── 파티 토글 ───────────────────────────────────────────────────────────────
-function toggleParty(charId) {
-  const char    = characters.find(c => c.id === charId);
-  if (!char) return;
-
-  const inParty = party.findIndex(p => p?.id === charId);
-
-  if (inParty >= 0) {
-    // 파티에서 제거
-    party[inParty] = null;
-    showToast(`${char.name} 을(를) 파티에서 제외했습니다.`);
-  } else {
-    // 빈 슬롯 찾아서 추가
-    const emptySlot = party.findIndex(p => p === null);
-    if (emptySlot < 0) {
-      showToast('파티 슬롯이 가득 찼습니다. (최대 3명)');
-      return;
-    }
-    party[emptySlot] = char;
-    showToast(`${char.name} 을(를) 파티 ${emptySlot + 1}번에 추가했습니다.`);
-  }
-
-  renderCharacters();
-  renderParty();
-  updatePartyInfo();
-}
-
-// ── 파티 슬롯 렌더 ──────────────────────────────────────────────────────────
-function renderParty() {
-  const filled = party.filter(Boolean).length;
-  document.getElementById('party-count').textContent = `${filled} / 3`;
-  document.getElementById('battle-btn').disabled = filled === 0;
-
-  party.forEach((char, i) => {
-    const slot = document.getElementById(`slot-${i}`);
-    if (!slot) return;
-    if (!char) {
-      slot.className = 'party-slot empty';
-      slot.innerHTML = `슬롯 ${i + 1} — 캐릭터를 클릭하여 추가`;
-    } else {
-      const hp  = char.hp_max || 10 * ((char.str_stat || 0) + (char.agi_stat || 0));
-      const mas = (char.mastery_types || []).join('/') || '무속성';
-      slot.className = 'party-slot filled';
-      slot.innerHTML = `
-        <div class="slot-num">${i + 1}</div>
-        <div class="slot-info">
-          <div class="slot-name">${char.name}</div>
-          <div class="slot-meta">${mas} · HP ${hp.toLocaleString()}</div>
-        </div>
-        <button class="slot-remove" onclick="removeFromParty(${i}, event)">✕</button>`;
-    }
-  });
-}
-
-function removeFromParty(idx, e) {
-  e.stopPropagation();
-  const name = party[idx]?.name;
-  party[idx] = null;
-  if (name) showToast(`${name} 을(를) 파티에서 제외했습니다.`);
-  renderCharacters();
-  renderParty();
-  updatePartyInfo();
-}
-
-// ── 파티 정보 ───────────────────────────────────────────────────────────────
-function updatePartyInfo() {
-  const filled = party.filter(Boolean);
-  if (filled.length === 0) {
-    document.getElementById('info-hp').textContent = '—';
-    document.getElementById('info-atk').textContent = '—';
-    document.getElementById('info-mastery').textContent = '—';
-    document.getElementById('info-skills').textContent = '—';
-    return;
-  }
-  const totalHp  = filled.reduce((s, c) => s + (c.hp_max || 10 * ((c.str_stat||0)+(c.agi_stat||0))), 0);
-  const avgAtk   = Math.round(filled.reduce((s, c) => s + Math.max(c.str_stat||0, c.wis_stat||0), 0) / filled.length);
-  const masteries= [...new Set(filled.flatMap(c => c.mastery_types || []))].join(', ') || '무속성';
-  const skills   = filled.reduce((s, c) => s + (c.skill_ids?.length || 0), 0);
-
-  document.getElementById('info-hp').textContent      = totalHp.toLocaleString();
-  document.getElementById('info-atk').textContent     = avgAtk;
-  document.getElementById('info-mastery').textContent = masteries;
-  document.getElementById('info-skills').textContent  = `${skills}개`;
-}
-
-// ── 전투 시작 ───────────────────────────────────────────────────────────────
-function startBattle() {
-  const ids = party.filter(Boolean).map(c => c.id);
-  if (ids.length === 0) return;
-  localStorage.setItem('party_ids', JSON.stringify(ids));
-  location.href = 'battle.html';
-}
-
-// ── 로그아웃 ─────────────────────────────────────────────────────────────────
-async function handleLogout() {
-  try {
-    await fetch(`${API}/auth/logout`, {
-      method: 'POST',
-      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}` }
-    });
-  } finally {
-    localStorage.clear();
-    location.href = 'auth.html';
-  }
-}
-
 loadCharacters();
-loadGold();
-
-// ── 상점 ─────────────────────────────────────────────────────────────────────
-let shopItems = [];
-
-async function renderShopPanel() {
-  const grid = document.getElementById('shop-grid');
-  if (!grid) return;
-  if (!shopItems.length) {
-    try {
-      const res  = await fetch(`${API}/character/shop/items`, {
-      headers: { 'ngrok-skip-browser-warning': '1', },
-    });
-      const data = await res.json();
-      shopItems  = data.items || [];
-    } catch { grid.innerHTML = '<div style="color:var(--red)">상점 로드 실패</div>'; return; }
-  }
-  const ICONS  = { skill_scroll:'📜', recruit_ticket:'✨', recruit_enhance:'⚡' };
-  const IC_CLS = { skill_scroll:'shop-icon-scroll', recruit_ticket:'shop-icon-recruit', recruit_enhance:'shop-icon-enhance' };
-  grid.innerHTML = shopItems.map(item => `
-    <div class="shop-card">
-      <div class="shop-card-hdr">
-        <div class="shop-icon ${IC_CLS[item.id]||''}">${ICONS[item.id]||'🛒'}</div>
-        <div>
-          <div class="shop-item-name">${item.name}</div>
-          <div class="shop-item-desc">${item.desc}</div>
-        </div>
-      </div>
-      <div class="shop-item-footer">
-        <div class="shop-price">G ${item.price.toLocaleString()}G
-          ${item.refund_dup ? `<span class="shop-refund">(중복 시 ${item.refund_dup}G 반환)</span>` : ''}
-        </div>
-        <button class="shop-buy-btn" onclick="buyItem('${item.id}')">구매</button>
-      </div>
-    </div>`).join('');
-}
-
-async function buyItem(itemId) {
-  if (itemId === 'recruit_enhance') {
-    const recruited = characters.filter(c => c.character_type === 'recruited' && (c.growth_stage||0) < 2);
-    if (!recruited.length) { showToast('강화 가능한 영입 캐릭터가 없습니다.'); return; }
-    openEnhanceSelect(recruited);
-    return;
-  }
-  const urls = {
-    skill_scroll:   `${API}/character/shop/buy/skill-scroll`,
-    recruit_ticket: `${API}/character/shop/buy/recruit-ticket`,
-  };
-  const url = urls[itemId];
-  if (!url) return;
-  try {
-    const res  = await fetch(url, { method:'POST', headers:{ 'ngrok-skip-browser-warning': '1', 'Authorization':`Bearer ${token}` } });
-    const data = await res.json();
-    if (!res.ok) { showToast(data.detail || '구매 실패'); return; }
-    showShopResult(itemId, data);
-    await loadGold();
-    await loadCharacters();
-  } catch { showToast('서버 오류'); }
-}
-
-function openEnhanceSelect(recruited) {
-  const list = document.getElementById('enhance-select-list');
-  list.innerHTML = recruited.map(c => `
-    <div class="enhance-select-item" onclick="buyEnhance(${c.id})">
-      ${c.name} <span style="color:var(--text3);font-size:.68rem;">강화 ${c.growth_stage||0}/2단계</span>
-    </div>`).join('');
-  document.getElementById('enhance-select-overlay').classList.add('show');
-}
-
-async function buyEnhance(charId) {
-  closeEnhanceSelect();
-  try {
-    const res  = await fetch(`${API}/character/shop/buy/recruit-enhance/${charId}`, {
-      method:'POST', headers:{ 'ngrok-skip-browser-warning': '1', 'Authorization':`Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (!res.ok) { showToast(data.detail || '구매 실패'); return; }
-    showShopResult('recruit_enhance', data);
-    await loadGold();
-    await loadCharacters();
-  } catch { showToast('서버 오류'); }
-}
-
-function closeEnhanceSelect() {
-  document.getElementById('enhance-select-overlay').classList.remove('show');
-}
-
-function showShopResult(itemId, data) {
-  const ICONS = { skill_scroll:'📜', recruit_ticket:'✨', recruit_enhance:'⚡' };
-  document.getElementById('shop-result-icon').textContent  = data.duplicate ? '🔄' : (ICONS[itemId]||'🎁');
-  document.getElementById('shop-result-title').textContent = data.duplicate ? '중복!' : '획득!';
-  document.getElementById('shop-result-msg').textContent   = data.message || '';
-  document.getElementById('shop-result-gold').textContent  = `보유 골드: ${(data.gold||0).toLocaleString()}G`;
-  document.getElementById('shop-result-overlay').classList.add('show');
-}
-
-function closeShopResult() {
-  document.getElementById('shop-result-overlay').classList.remove('show');
-}
+loadGold(); // 이 줄을 추가해야 페이지 시작 시 골드를 가져옵니다.
 </script>
+<!-- 강화 슬라이더 모달 -->
+<div class="upgrade-modal-overlay" id="upgrade-modal-overlay">
+  <div class="upgrade-modal-card">
+    <div class="upgrade-modal-title" id="upgrade-modal-title">강화</div>
+    <div class="upgrade-points-left">
+      남은 포인트: <strong id="points-left">15</strong> / 15
+    </div>
+    <div class="slider-row">
+      <div class="slider-label">힘 <span id="val-str">0</span></div>
+      <input class="slider-input" type="range" id="slider-str" min="0" max="15" value="0" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-label">민첩 <span id="val-agi">0</span></div>
+      <input class="slider-input" type="range" id="slider-agi" min="0" max="15" value="0" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-label">지능 <span id="val-int">0</span></div>
+      <input class="slider-input" type="range" id="slider-int" min="0" max="15" value="0" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-label">지혜 <span id="val-wis">0</span></div>
+      <input class="slider-input" type="range" id="slider-wis" min="0" max="15" value="0" oninput="onSlider()">
+    </div>
+    <div class="upgrade-modal-btns">
+      <button class="upgrade-modal-btn cancel" onclick="closeUpgradeModal()">취소</button>
+      <button class="upgrade-modal-btn confirm" id="upgrade-confirm-btn" onclick="confirmUpgrade()" disabled>강화하기</button>
+    </div>
+  </div>
+</div>
 <!-- 상점 결과 모달 -->
 <div class="shop-result-overlay" id="shop-result-overlay">
   <div class="shop-result-card">
