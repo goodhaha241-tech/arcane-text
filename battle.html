@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCANE TEXT — 전투</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f7f5f2;
+  --bg2:      #edeae4;
+  --surface:  #ffffff;
+  --border:   #ddd8d0;
+  --border2:  #c8c2b8;
+  --text:     #1c1917;
+  --text2:    #6b6560;
+  --text3:    #9c9590;
+  --accent:   #b5451b;
+  --accent2:  #c8682a;
+  --gold:     #9a7c3f;
+  --gold-bg:  #faf6ec;
+  --green:    #3a7c52;
+  --green-bg: #f0fdf4;
+  --red:      #c0392b;
+  --red-bg:   #fef2f2;
+  --blue:     #2563a8;
+  --blue-bg:  #eff6ff;
+  --shadow:   0 1px 4px rgba(28,25,23,.07);
+  --shadow2:  0 4px 20px rgba(28,25,23,.12);
+  --r: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+
+/* ── 네비 ─────────────────────────────── */
+.nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 50px; flex-shrink: 0; position: sticky; top: 0; z-index: 100;
+}
+.nav-brand { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: .1em; }
+.nav-brand span { color: var(--accent); }
+.nav-center { display: flex; align-items: center; gap: 10px; }
+.turn-badge {
+  font-family: 'Cinzel', serif; font-size: .82rem; font-weight: 600;
+  color: var(--text2); background: var(--bg2);
+  padding: 4px 14px; border-radius: 14px; border: 1px solid var(--border);
+}
+.phase-badge {
+  font-size: .72rem; font-weight: 600; padding: 3px 10px;
+  border-radius: 10px; letter-spacing: .04em;
+}
+.phase-player { background: var(--blue-bg); color: var(--blue); border: 1px solid #bfd7f5; }
+.phase-enemy  { background: var(--red-bg);  color: var(--red);  border: 1px solid #fecaca; }
+.phase-result { background: var(--green-bg);color: var(--green);border: 1px solid #bbf7d0; }
+.nav-retreat {
+  font-size: .75rem; color: var(--text3);
+  background: none; border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: 6px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: all .15s;
+}
+.nav-retreat:hover { border-color: var(--red); color: var(--red); }
+
+/* ── 메인 그리드 ───────────────────────── */
+.battle-wrap {
+  flex: 1; display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto 1fr auto;
+  max-width: 1000px; width: 100%; margin: 0 auto;
+  padding: 16px; gap: 14px;
+}
+@media (max-width: 760px) {
+  .battle-wrap { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* ── 적 영역 ───────────────────────────── */
+.enemy-area {
+  grid-column: 1; grid-row: 1;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px; box-shadow: var(--shadow);
+}
+.area-label {
+  font-size: .68rem; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px;
+}
+.enemy-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.enemy-card {
+  flex: 1; min-width: 150px; max-width: 240px;
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 14px;
+  transition: all .2s; position: relative;
+}
+.enemy-card.targeted { border-color: var(--accent); background: #fdf8f6; }
+.enemy-card.dead { opacity: .3; filter: grayscale(1); }
+.enemy-name {
+  font-size: .85rem; font-weight: 600; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+}
+.status-tag {
+  font-size: .58rem; padding: 1px 5px; border-radius: 3px;
+  font-weight: 600; border: 1px solid currentColor;
+}
+.tag-debuff { color: var(--red); background: var(--red-bg); }
+.tag-buff   { color: var(--green); background: var(--green-bg); }
+.hp-bar-hdr {
+  display: flex; justify-content: space-between;
+  font-size: .63rem; color: var(--text3); margin-bottom: 3px;
+}
+.hp-bar-bg { height: 7px; background: var(--bg2); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.hp-bar-fill { height: 100%; border-radius: 4px; transition: width .5s ease, background .3s; }
+.hp-high { background: var(--green); }
+.hp-mid  { background: #e67e22; }
+.hp-low  { background: var(--red); }
+.ap-row { display: flex; gap: 3px; }
+.ap-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background .2s; }
+.ap-dot.on { background: var(--gold); }
+
+/* 예고 배너 */
+.announced-bar {
+  margin-top: 12px; padding: 9px 14px;
+  background: var(--gold-bg); border: 1px solid #e8d9a8;
+  border-radius: 7px; font-size: .78rem; color: var(--gold);
+  display: none; align-items: center; gap: 8px;
+}
+.announced-bar.show { display: flex; }
+
+/* ── 사이드바 ──────────────────────────── */
+.sidebar {
+  grid-column: 2; grid-row: 1 / 4;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+/* 파티 현황 패널 */
+.party-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
+}
+.panel-hdr {
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+  font-family: 'Cinzel', serif; font-size: .82rem; font-weight: 600;
+  letter-spacing: .06em;
+}
+.party-list { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+.party-member {
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px;
+  transition: all .2s; cursor: pointer;
+}
+.party-member.active-turn {
+  border-color: var(--accent); background: #fdf8f6;
+  box-shadow: 0 0 0 2px rgba(181,69,27,.15);
+}
+.party-member.done   { border-color: var(--green); background: var(--green-bg); opacity: .75; }
+.party-member.dead   { opacity: .3; filter: grayscale(1); cursor: default; }
+.member-name-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.member-name { font-size: .82rem; font-weight: 600; }
+.member-turn-tag {
+  font-size: .62rem; padding: 1px 6px; border-radius: 10px;
+  font-weight: 600;
+}
+.tag-acting  { background: var(--accent); color: #fff; }
+.tag-done    { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
+.tag-waiting { background: var(--bg2); color: var(--text3); border: 1px solid var(--border); }
+.member-hp-bar { height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+.member-hp-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+.member-stats-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .65rem; color: var(--text3);
+}
+.member-ap-dots { display: flex; gap: 2px; }
+.member-ap-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.member-ap-dot.on { background: var(--gold); }
+.member-status { font-size: .62rem; color: var(--red); }
+
+/* ── 전투 로그 ─────────────────────────── */
+.log-area {
+  grid-column: 1; grid-row: 2;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+}
+.log-hdr {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  font-size: .68rem; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.log-body {
+  flex: 1; overflow-y: auto; padding: 10px 14px;
+  display: flex; flex-direction: column-reverse;
+  max-height: 180px; min-height: 100px;
+}
+.log-entry {
+  font-size: .76rem; line-height: 1.6; padding: 2px 0;
+  border-bottom: 1px solid var(--border); color: var(--text2);
+  animation: fadeUp .2s ease;
+}
+.log-entry:first-child { border-bottom: none; }
+.log-strong  { color: var(--accent); font-weight: 600; }
+.log-weak    { color: var(--blue); }
+.log-system  { color: var(--text3); font-style: italic; }
+.log-victory { color: var(--green); font-weight: 700; font-family: 'Cinzel', serif; }
+.log-defeat  { color: var(--red);   font-weight: 700; font-family: 'Cinzel', serif; }
+.log-turn-sep {
+  color: var(--text3); font-family: 'Cinzel', serif;
+  font-size: .68rem; letter-spacing: .08em; padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── 행동 패널 ─────────────────────────── */
+.action-panel {
+  grid-column: 1; grid-row: 3;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px; box-shadow: var(--shadow);
+}
+
+/* 현재 행동 중인 캐릭터 헤더 */
+.actor-hdr {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.actor-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: .95rem; font-weight: 700; flex-shrink: 0;
+}
+.actor-name-wrap { flex: 1; min-width: 0; }
+.actor-name-big { font-size: .95rem; font-weight: 700; }
+.actor-meta { font-size: .72rem; color: var(--text2); margin-top: 1px; }
+.actor-status-row { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* AP 디스플레이 */
+.ap-display-lg { display: flex; gap: 5px; align-items: center; }
+.ap-pip-lg {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--border); border: 1.5px solid var(--border2); transition: all .2s;
+}
+.ap-pip-lg.on { background: var(--gold); border-color: #c4a055; }
+
+/* HP 바 (액션 패널) */
+.actor-hp-wrap { flex: 1; }
+.actor-hp-nums {
+  display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px;
+}
+.actor-hp-cur { font-size: .88rem; font-weight: 700; }
+.actor-hp-max { font-size: .7rem; color: var(--text3); }
+
+/* 스킬 그리드 */
+.skill-grid-btns {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 10px;
+}
+.skill-btn {
+  padding: 9px 7px; border: 1.5px solid var(--border); border-radius: 7px;
+  background: transparent; font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; text-align: left; transition: all .18s; position: relative;
+}
+.skill-btn:hover:not(:disabled) { border-color: var(--border2); background: var(--bg2); }
+.skill-btn:disabled { opacity: .35; cursor: not-allowed; }
+.skill-btn.no-ap { border-color: #fecaca; background: var(--red-bg); }
+.skill-ap-tag {
+  position: absolute; top: 4px; right: 5px;
+  font-size: .58rem; font-weight: 700; color: var(--gold);
+  background: var(--gold-bg); border: 1px solid #e8d9a8;
+  padding: 1px 4px; border-radius: 3px;
+}
+.skill-name-sm { font-size: .76rem; font-weight: 600; margin-bottom: 1px; padding-right: 22px; }
+.skill-meta-sm { font-size: .62rem; color: var(--text3); }
+
+/* 방어/회피 */
+.defend-row { display: flex; gap: 8px; }
+.action-btn2 {
+  flex: 1; padding: 9px; border: 1.5px solid var(--border); border-radius: 7px;
+  background: transparent; font-family: 'Noto Sans KR', sans-serif;
+  font-size: .8rem; font-weight: 500; cursor: pointer; transition: all .18s; color: var(--text2);
+}
+.action-btn2:hover:not(:disabled) { border-color: var(--border2); background: var(--bg2); color: var(--text); }
+.action-btn2:disabled { opacity: .35; cursor: not-allowed; }
+.btn-defend:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
+.btn-evade:hover:not(:disabled)  { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+
+/* 적 처리 중 메시지 */
+.enemy-turn-msg {
+  text-align: center; padding: 20px; color: var(--text3);
+  font-size: .85rem; font-style: italic;
+  display: none;
+}
+
+/* ── 결과 오버레이 ─────────────────────── */
+.result-overlay {
+  position: fixed; inset: 0; background: rgba(28,25,23,.55);
+  display: flex; align-items: center; justify-content: center; z-index: 200;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.result-overlay.show { opacity: 1; pointer-events: all; }
+.result-card {
+  background: var(--surface); border-radius: 14px; padding: 36px 48px;
+  text-align: center; box-shadow: var(--shadow2);
+  transform: scale(.9); transition: transform .3s;
+}
+.result-overlay.show .result-card { transform: scale(1); }
+.result-title { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+.result-title.win  { color: var(--green); }
+.result-title.lose { color: var(--red); }
+.result-sub { font-size: .88rem; color: var(--text2); margin-bottom: 26px; }
+.result-stats { display: flex; gap: 24px; justify-content: center; margin-bottom: 24px; }
+.result-stat { text-align: center; }
+.result-stat-val { font-size: 1.3rem; font-weight: 700; font-family: 'Cinzel', serif; }
+.result-stat-lbl { font-size: .7rem; color: var(--text3); margin-top: 2px; }
+.result-btn {
+  padding: 11px 32px; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; font-family: 'Noto Sans KR', sans-serif;
+  font-size: .88rem; font-weight: 600; cursor: pointer; transition: all .2s;
+}
+.result-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+
+/* ── 로딩 ──────────────────────────────── */
+.battle-loading {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; z-index: 300;
+}
+.spinner {
+  width: 30px; height: 30px; border: 3px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+.loading-msg { font-size: .85rem; color: var(--text2); }
+
+/* ── 타겟 선택 모드 ─────────────────────── */
+.select-mode-banner {
+  display: none;
+  align-items: center; gap: 8px;
+  padding: 8px 14px; margin-bottom: 10px;
+  border-radius: 7px; font-size: .8rem; font-weight: 500;
+  animation: fadeUp .2s ease;
+}
+.select-mode-banner.enemy-mode {
+  background: var(--red-bg); color: var(--red);
+  border: 1px solid #fecaca;
+}
+.select-mode-banner.ally-mode {
+  background: var(--green-bg); color: var(--green);
+  border: 1px solid #bbf7d0;
+}
+.select-mode-banner.show { display: flex; }
+.banner-cancel {
+  margin-left: auto; padding: 3px 10px;
+  border: 1px solid currentColor; border-radius: 5px;
+  background: none; cursor: pointer;
+  font-size: .72rem; font-weight: 600; color: inherit;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 선택 가능한 적/아군 하이라이트 */
+.enemy-card.selectable {
+  cursor: pointer;
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 2px rgba(192,57,43,.2);
+  transition: all .15s;
+}
+.enemy-card.selectable:hover {
+  background: var(--red-bg);
+  transform: translateY(-2px);
+}
+.party-member.selectable {
+  cursor: pointer;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 2px rgba(58,124,82,.2);
+  transition: all .15s;
+}
+.party-member.selectable:hover {
+  background: var(--green-bg);
+}
+.party-member.selectable.dead { display: none; }
+
+/* 선택 모드 중 스킬 버튼 흐리게 */
+.skills-dimmed .skill-btn { opacity: .35; pointer-events: none; }
+.skills-dimmed .action-btn2 { opacity: .35; pointer-events: none; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- 로딩 -->
+<div class="battle-loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-msg">전투를 준비하고 있습니다...</div>
+</div>
+
+<!-- 네비 -->
+<nav class="nav">
+  <div class="nav-brand">ARC<span>A</span>NE TEXT</div>
+  <div class="nav-center">
+    <div class="turn-badge" id="turn-badge">턴 1</div>
+    <div class="phase-badge phase-player" id="phase-badge">행동 선택</div>
+  </div>
+  <button class="nav-retreat" onclick="confirmRetreat()">철수</button>
+</nav>
+
+<!-- 전투 레이아웃 -->
+<div class="battle-wrap" id="battle-wrap" style="display:none">
+
+  <!-- 적 영역 -->
+  <div class="enemy-area">
+    <div class="area-label">적</div>
+    <div class="enemy-row" id="enemy-row"></div>
+    <div class="announced-bar" id="announced-bar">
+      <span>⚠</span><span id="announced-text"></span>
+    </div>
+  </div>
+
+  <!-- 사이드바: 파티 현황 -->
+  <div class="sidebar">
+    <div class="party-panel">
+      <div class="panel-hdr">파티 현황</div>
+      <div class="party-list" id="party-list"></div>
+    </div>
+  </div>
+
+  <!-- 전투 로그 -->
+  <div class="log-area">
+    <div class="log-hdr">전투 로그</div>
+    <div class="log-body" id="log-body">
+      <div class="log-entry log-system">전투가 시작되었습니다.</div>
+    </div>
+  </div>
+
+  <!-- 행동 패널 -->
+  <div class="action-panel" id="action-panel">
+    <!-- 플레이어 행동 선택 시 -->
+    <div id="player-action-ui">
+      <!-- 타겟 선택 모드 배너 -->
+      <div class="select-mode-banner" id="select-banner">
+        <span id="select-banner-text">대상을 선택하세요</span>
+        <button class="banner-cancel" onclick="cancelSelect()">취소</button>
+      </div>
+      <div class="actor-hdr" id="actor-hdr"></div>
+      <div class="skill-grid-btns" id="skill-grid-btns"></div>
+      <div class="defend-row">
+        <button class="action-btn2 btn-defend" id="btn-defend" onclick="doAction('defend')">🛡 방어</button>
+        <button class="action-btn2 btn-evade"  id="btn-evade"  onclick="doAction('evade')">💨 회피</button>
+      </div>
+    </div>
+    <!-- 적 턴 처리 중 -->
+    <div class="enemy-turn-msg" id="enemy-turn-msg">적이 행동하고 있습니다...</div>
+  </div>
+
+</div>
+
+<!-- 결과 오버레이 -->
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card">
+    <div class="result-title" id="result-title">승리!</div>
+    <div class="result-sub"  id="result-sub"></div>
+    <div class="result-stats" id="result-stats"></div>
+    <div class="reward-box" id="reward-box" style="display:none">
+      <div class="reward-title">⚔ 전투 보상</div>
+      <div class="reward-breakdown" id="reward-breakdown"></div>
+    </div>
+    <button class="result-btn" onclick="location.href='index.html'">메인으로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+const API   = 'https://conditions-interpreted-dennis-marker.trycloudflare.com';
+const token = localStorage.getItem('access_token');
+if (!token) location.href = 'auth.html';
+
+// ── 전투 상태 ────────────────────────────────────────────────────────────────
+let battleId    = null;
+let battleState = null;
+let actors      = {};     // { id: actorData }
+let skillMeta   = {};     // { skillId: skillData }
+let actionLock  = false;
+
+// 파티 행동 큐 관리
+// 한 턴에 파티원 전원이 순서대로 행동 선택 → 마지막 액터 행동 후 적 턴 진행
+let partyQueue  = [];     // 이번 턴 행동 대기 중인 플레이어 actor id 목록
+let queueIdx    = 0;      // 현재 행동 선택 중인 큐 인덱스
+
+// 전투 통계
+let stats = { turns: 0, totalDmg: 0, defeated: 0 };
+
+// 타겟 선택 상태
+let selectMode     = null;   // null | 'enemy' | 'ally' | 'aoe_focus'
+let pendingSkillId = null;   // 선택 대기 중인 스킬 ID
+let rangeFired     = false;  // 이번 턴 원거리 선행 사용 여부
+let rangeTargetId  = null;   // 원거리 피해를 준 대상 ID
+let aoeFocusPicks  = [];     // 범위:집중 선택한 대상 목록 (최대 2명)
+
+// ── 초기화 ───────────────────────────────────────────────────────────────────
+async function init() {
+  const partyIds = JSON.parse(localStorage.getItem('party_ids') || '[]');
+  if (!partyIds.length) { location.href = 'index.html'; return; }
+
+  // 스킬 메타 로드 (maker-skills + 고유기 포함 전체)
+  try {
+    const res  = await fetch(`${API}/character/meta/maker-skills`);
+    const data = await res.json();
+    (data.skills || []).forEach(s => { skillMeta[s.id] = s; });
+  } catch {}
+
+  // 전투 시작
+  try {
+    const res  = await fetch(`${API}/battle/start`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({
+        mode: 'single',
+        player_actor_ids: partyIds,
+        enemy_preset: 'goblin',
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.detail || '전투 시작 실패'); location.href = 'index.html'; return; }
+
+    battleId = data.battle_id;
+    applyState(data.state);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('battle-wrap').style.display = '';
+    initPartyQueue();
+
+  } catch (e) {
+    alert('서버에 연결할 수 없습니다.');
+    location.href = 'index.html';
+  }
+}
+
+// ── 상태 반영 ────────────────────────────────────────────────────────────────
+function applyState(state) {
+  battleState = state;
+  actors = {};
+  (state.actors || []).forEach(a => { actors[a.id] = a; });
+
+  // 로그
+  (state.logs || []).flatMap(l => l.messages || []).forEach(msg => addLog(msg));
+
+  // 턴 배지
+  document.getElementById('turn-badge').textContent = `턴 ${state.turn}`;
+
+  // 예고
+  const bar = document.getElementById('announced-bar');
+  if (state.announced) {
+    bar.classList.add('show');
+    document.getElementById('announced-text').textContent = `적 예고: ${state.announced}`;
+  } else {
+    bar.classList.remove('show');
+  }
+
+  renderEnemies();
+  renderPartyList();
+}
+
+// ── 파티 큐 초기화 (턴 시작마다) ─────────────────────────────────────────────
+function initPartyQueue() {
+  partyQueue = Object.values(actors)
+    .filter(a => a.team === 'player' && a.hp > 0)
+    .map(a => a.id);
+  queueIdx = 0;
+
+  if (partyQueue.length === 0) {
+    // 전멸
+    showResult();
+    return;
+  }
+
+  setPhase('player');
+  renderActionPanel();
+  renderPartyList();
+  stats.turns++;
+}
+
+// ── 현재 행동할 액터 ─────────────────────────────────────────────────────────
+function currentActor() {
+  return actors[partyQueue[queueIdx]] || null;
+}
+
+// ── 행동 선택 ────────────────────────────────────────────────────────────────
+async function doActionWithTarget(type, skillId, targetId) {
+  await doAction(type, skillId, targetId);
+}
+
+// API만 호출 (advanceQueue 없음) — fireRanged/doAoeFocus 중간 타격용
+async function callAPI(type, skillId, targetId) {
+  const actor = currentActor();
+  if (!actor) return null;
+  const body = { battle_id: battleId, actor_id: actor.id,
+                 action_type: type, skill_id: skillId };
+  if (targetId != null) body.target_id = targetId;
+  const res = await fetch(`${API}/battle/action`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) { addLog(data.detail || '행동 실패', 'system'); return null; }
+  return data;
+}
+
+async function doAction(type, skillId = null, targetId = null) {
+  if (actionLock) return;
+  const actor = currentActor();
+  if (!actor || actor.hp <= 0) { advanceQueue(); return; }
+  if (battleState?.status === 'finished') return;
+
+  actionLock = true;
+  lockUI(true);
+  try {
+    const data = await callAPI(type, skillId, targetId);
+    if (!data) return;
+    applyState(data);
+    if (data.status === 'finished') { showResult(data.reward || null); return; }
+    advanceQueue();
+  } catch {
+    addLog('서버 오류가 발생했습니다.', 'system');
+  } finally {
+    actionLock = false;
+    lockUI(false);
+  }
+}
+
+async function advanceQueue() {
+  cancelSelect();   // 큐 넘어갈 때 선택 모드 초기화
+  queueIdx++;
+
+  // 살아있는 다음 액터 찾기
+  while (queueIdx < partyQueue.length && (actors[partyQueue[queueIdx]]?.hp ?? 0) <= 0) {
+    queueIdx++;
+  }
+
+  if (queueIdx < partyQueue.length) {
+    // 다음 파티원 행동
+    renderActionPanel();
+    renderPartyList();
+    return;
+  }
+
+  // 파티 전원 행동 완료 → 적 턴
+  await runEnemyTurn();
+}
+
+// ── 적 턴 (싱글: 백엔드가 AI 처리, 여기선 폴링 or 단순 상태 조회) ───────────
+async function runEnemyTurn() {
+  setPhase('enemy');
+  document.getElementById('player-action-ui').style.display = 'none';
+  document.getElementById('enemy-turn-msg').style.display   = 'block';
+  renderPartyList();
+
+  // 짧은 딜레이 후 상태 폴링 (백엔드가 이미 AI 행동까지 처리했을 경우)
+  await delay(600);
+
+  try {
+    const res  = await fetch(`${API}/battle/${battleId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    applyState(data);
+
+    if (data.status === 'finished') { showResult(data.reward || null); return; }
+
+    // 새 턴 시작
+    document.getElementById('enemy-turn-msg').style.display   = 'none';
+    document.getElementById('player-action-ui').style.display = 'block';
+    addLog(`─── 턴 ${data.turn} ───`, 'turn-sep');
+    initPartyQueue();
+
+  } catch {
+    addLog('상태 갱신 오류', 'system');
+    document.getElementById('enemy-turn-msg').style.display   = 'none';
+    document.getElementById('player-action-ui').style.display = 'block';
+  }
+}
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+function doSkill(skillId) {
+  const s = skillMeta[skillId];
+  if (!s) return;
+
+  const target = s.target;
+  const action = s.action_type || 'attack';
+
+  // ── 원거리 선행 처리 ──────────────────────────────────────────────────────
+  // 원거리 스킬은 즉시 실행 후 후속 행동(melee/support/heal/defend/evade) 대기
+  if (target === 'ranged') {
+    const aliveEnemies = Object.values(actors).filter(a => a.team === 'enemy' && a.hp > 0);
+    if (!aliveEnemies.length) return;
+
+    // 적 1명이면 자동, 여러 명이면 선택
+    if (aliveEnemies.length === 1) {
+      fireRanged(skillId, aliveEnemies[0].id);
+    } else {
+      enterSelectMode('ranged_pick', skillId, '⇢ 원거리 공격 대상을 선택하세요');
+    }
+    return;
+  }
+
+  // ── 즉시 실행 ─────────────────────────────────────────────────────────────
+  if (['aoe_burst', 'self'].includes(target) || ['defend', 'evade'].includes(action)) {
+    doAction('skill', skillId);
+    return;
+  }
+
+  // ── 범위:집중 — 최대 2명 선택 ────────────────────────────────────────────
+  if (target === 'aoe_focus') {
+    aoeFocusPicks = [];
+    pendingSkillId = skillId;
+    enterSelectMode('aoe_focus', skillId, `집중 공격 — 대상 선택 (최대 ${s.aoe_focus_count || 2}명, 중복 가능)`);
+    return;
+  }
+
+  // ── 근거리 단일 — 적 선택 ────────────────────────────────────────────────
+  if (target === 'melee') {
+    const aliveEnemies = Object.values(actors).filter(a => a.team === 'enemy' && a.hp > 0);
+    if (!aliveEnemies.length) return;
+    if (aliveEnemies.length === 1) {
+      doAction('skill', skillId, aliveEnemies[0].id);
+    } else {
+      enterSelectMode('enemy', skillId, '⚔ 공격할 적을 선택하세요');
+    }
+    return;
+  }
+
+  // ── 회복 / 지원 — 아군 선택 ──────────────────────────────────────────────
+  if (['heal', 'support'].includes(action) || ['heal', 'support'].includes(target)) {
+    const aliveAllies = Object.values(actors).filter(a => a.team === 'player' && a.hp > 0);
+    if (!aliveAllies.length) return;
+    if (aliveAllies.length === 1) {
+      doAction('skill', skillId, aliveAllies[0].id);
+    } else {
+      const label = action === 'heal' ? '💚 회복할 대상을 선택하세요' : '✦ 지원할 대상을 선택하세요';
+      enterSelectMode('ally', skillId, label);
+    }
+    return;
+  }
+
+  doAction('skill', skillId);
+}
+
+// 원거리 스킬 즉시 발사 후 후속 행동 대기
+async function fireRanged(skillId, targetId) {
+  if (actionLock) return;
+  actionLock = true; lockUI(true);
+  try {
+    const data = await callAPI('skill', skillId, targetId);
+    if (!data) return;
+    applyState(data);
+    if (data.status === 'finished') { showResult(data.reward || null); return; }
+    rangeFired    = true;
+    rangeTargetId = targetId;
+    showRangeFollowUp();
+  } catch { addLog('서버 오류', 'system'); }
+  finally { actionLock = false; lockUI(false); }
+}
+
+function showRangeFollowUp() {
+  // 배너를 "후속 행동을 선택하세요"로 변경
+  const banner = document.getElementById('select-banner');
+  banner.className = 'select-mode-banner enemy-mode show';
+  banner.style.background = 'var(--blue-bg)';
+  banner.style.color = 'var(--blue)';
+  banner.style.borderColor = '#bfd7f5';
+  document.getElementById('select-banner-text').textContent =
+    '⚔ 원거리 선행 완료 — 후속 행동을 선택하세요 (근거리·지원·방어·회피)';
+  // 취소 버튼 숨김 (후속 행동 없이는 턴 진행 안 됨)
+  banner.querySelector('.banner-cancel').style.display = 'none';
+  // 스킬 버튼 재렌더 — 원거리 비활성, 나머지 후속 행동 연결
+  const actor = currentActor();
+  if (!actor) return;
+  const TGT_KR2 = { melee:'근거리', ranged:'원거리 선행', aoe_focus:'범위:집중',
+                    aoe_burst:'범위:방출', heal:'회복', support:'지원', self:'자신' };
+  document.getElementById('skill-grid-btns').innerHTML =
+    (actor.skill_ids || []).map(sid => {
+      const s = skillMeta[sid];
+      if (!s) return '';
+      const noAP    = actor.ap < s.ap_cost;
+      const blocked = noAP || s.target === 'ranged'
+                           || s.target === 'aoe_focus'
+                           || s.target === 'aoe_burst';
+      const tgtKr   = TGT_KR2[s.target] || s.target;
+      const focusStr = s.target === 'aoe_focus' ? ` (최대 ${s.aoe_focus_count||2}명)` : '';
+      return `<button class="skill-btn ${blocked?'no-ap':''}"
+        ${blocked?'disabled':'onclick="doFollowUpSkill('+sid+')"'}>
+        <div class="skill-ap-tag">AP ${s.ap_cost}</div>
+        <div class="skill-name-sm">${s.name}</div>
+        <div class="skill-meta-sm">${s.skill_type} · ${tgtKr}${focusStr}${s.power?' · '+s.power:''}</div>
+      </button>`;
+    }).join('');
+  // skills-dimmed 해제 (enterSelectMode에서 추가됐을 수 있음)
+  document.getElementById('skill-grid-btns').classList.remove('skills-dimmed');
+  document.querySelector('.defend-row').classList.remove('skills-dimmed');
+  document.getElementById('btn-defend').onclick = () => doFollowUpAction('defend');
+  document.getElementById('btn-evade').onclick  = () => doFollowUpAction('evade');
+  document.getElementById('btn-defend').disabled = false;
+  document.getElementById('btn-evade').disabled  = false;
+}
+
+function doFollowUpSkill(skillId) {
+  const s = skillMeta[skillId];
+  if (!s) return;
+  const enemies = Object.values(actors).filter(a => a.team==='enemy' && a.hp>0);
+  const allies  = Object.values(actors).filter(a => a.team==='player' && a.hp>0);
+  if (s.target === 'melee' || s.target === 'aoe_focus') {
+    if (!enemies.length) return;
+    if (enemies.length === 1) { doFollowUpAction('skill', skillId, enemies[0].id); return; }
+    pendingSkillId = skillId;
+    selectMode = 'followup_enemy';
+    document.querySelectorAll('.enemy-card:not(.dead)').forEach(e => e.classList.add('selectable'));
+    document.getElementById('select-banner-text').textContent = '⚔ 공격 대상을 선택하세요';
+  } else if (s.action_type === 'heal' || s.action_type === 'support') {
+    if (!allies.length) return;
+    if (allies.length === 1) { doFollowUpAction('skill', skillId, allies[0].id); return; }
+    pendingSkillId = skillId;
+    selectMode = 'followup_ally';
+    document.querySelectorAll('.party-member:not(.dead)').forEach(e => e.classList.add('selectable'));
+    document.getElementById('select-banner-text').textContent = '💚 대상을 선택하세요';
+  } else {
+    doFollowUpAction('skill', skillId, null);
+  }
+}
+
+async function doFollowUpAction(type, skillId = null, targetId = null) {
+  rangeFired = false;
+  cancelSelect();
+  await doAction(type, skillId, targetId);
+  document.getElementById('btn-defend').onclick = () => doAction('defend');
+  document.getElementById('btn-evade').onclick  = () => doAction('evade');
+}
+
+
+function renderEnemies() {
+  const enemies = Object.values(actors).filter(a => a.team === 'enemy');
+  document.getElementById('enemy-row').innerHTML = enemies.map(e => {
+    const pct  = Math.max(0, Math.round((e.hp / e.hp_max) * 100));
+    const cls  = pct > 60 ? 'hp-high' : pct > 30 ? 'hp-mid' : 'hp-low';
+    const dead = e.hp <= 0;
+    const statuses = (e.status_effects || []).map(s =>
+      `<span class="status-tag tag-debuff">${s.type}</span>`
+    ).join('');
+    return `
+    <div class="enemy-card ${dead ? 'dead' : ''}"
+         id="enemy-card-${e.id}"
+         onclick="onEnemyClick(${e.id}, ${dead})">
+      <div class="enemy-name">${e.name}
+        ${e.is_defending ? '<span class="status-tag tag-buff">방어</span>' : ''}
+        ${e.is_evading   ? '<span class="status-tag tag-buff">회피</span>' : ''}
+        ${statuses}
+      </div>
+      <div class="hp-bar-hdr"><span>HP</span><span>${e.hp.toLocaleString()} / ${e.hp_max.toLocaleString()}</span></div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="ap-row">${Array.from({length:e.ap_max},(_,i)=>`<div class="ap-dot ${i<e.ap?'on':''}"></div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── 렌더: 파티 사이드바 ──────────────────────────────────────────────────────
+function renderPartyList() {
+  const players = Object.values(actors).filter(a => a.team === 'player');
+  document.getElementById('party-list').innerHTML = players.map((p, i) => {
+    const hpPct  = Math.max(0, Math.round((p.hp / p.hp_max) * 100));
+    const hpCls  = hpPct > 60 ? 'hp-high' : hpPct > 30 ? 'hp-mid' : 'hp-low';
+    const dead   = p.hp <= 0;
+    const qPos   = partyQueue.indexOf(p.id);
+    const isAct  = qPos === queueIdx && !dead;
+    const isDone = qPos >= 0 && qPos < queueIdx && !dead;
+    const tagCls = isAct ? 'tag-acting' : isDone ? 'tag-done' : 'tag-waiting';
+    const tagLbl = isAct ? '행동 중' : isDone ? '완료' : dead ? '전투불능' : '대기';
+    const statuses = (p.status_effects || []).map(s => s.type).join(', ');
+
+    return `
+    <div class="party-member ${isAct?'active-turn':''} ${isDone?'done':''} ${dead?'dead':''}"
+         id="ally-card-${p.id}"
+         onclick="onAllyClick(${p.id}, ${dead})">
+      <div class="member-name-row">
+        <span class="member-name">${p.name}</span>
+        <span class="member-turn-tag ${tagCls}">${tagLbl}</span>
+      </div>
+      <div class="member-hp-bar">
+        <div class="member-hp-fill ${hpCls}" style="width:${hpPct}%"></div>
+      </div>
+      <div class="member-stats-row">
+        <span>${p.hp.toLocaleString()} / ${p.hp_max.toLocaleString()} HP</span>
+        <div class="member-ap-dots">
+          ${Array.from({length:p.ap_max},(_,i)=>`<div class="member-ap-dot ${i<p.ap?'on':''}"></div>`).join('')}
+          <span style="margin-left:3px;font-size:.62rem;">${p.ap}AP</span>
+        </div>
+      </div>
+      ${statuses ? `<div class="member-status">${statuses}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── 렌더: 행동 패널 ──────────────────────────────────────────────────────────
+function renderActionPanel() {
+  const actor = currentActor();
+  if (!actor) return;
+
+  // 헤더
+  const hpPct  = Math.max(0, Math.round((actor.hp / actor.hp_max) * 100));
+  const hpCls  = hpPct > 60 ? 'hp-high' : hpPct > 30 ? 'hp-mid' : 'hp-low';
+  const statuses = (actor.status_effects || []).map(s =>
+    `<span class="status-tag tag-debuff">${s.type}</span>`
+  ).join('');
+  const initial = actor.name.charAt(0);
+
+  document.getElementById('actor-hdr').innerHTML = `
+    <div class="actor-avatar">${initial}</div>
+    <div class="actor-name-wrap">
+      <div class="actor-name-big">${actor.name}</div>
+      <div class="actor-meta">
+        파티원 ${queueIdx+1} / ${partyQueue.length} 행동 중
+        ${actor.is_defending ? ' · <span style="color:var(--blue)">방어 태세</span>' : ''}
+        ${actor.is_evading   ? ' · <span style="color:var(--green)">회피 태세</span>' : ''}
+      </div>
+    </div>
+    <div style="text-align:right;flex-shrink:0;">
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:4px;">AP</div>
+      <div class="ap-display-lg">
+        ${Array.from({length:actor.ap_max},(_,i)=>`<div class="ap-pip-lg ${i<actor.ap?'on':''}"></div>`).join('')}
+        <span style="font-size:.7rem;color:var(--text3);margin-left:3px;">${actor.ap}/${actor.ap_max}</span>
+      </div>
+      <div style="margin-top:6px;">
+        <div class="hp-bar-bg" style="width:100px;height:4px;">
+          <div class="hp-bar-fill ${hpCls}" style="width:${hpPct}%"></div>
+        </div>
+        <div style="font-size:.62rem;color:var(--text3);margin-top:2px;text-align:right;">${actor.hp.toLocaleString()} HP</div>
+      </div>
+    </div>`;
+
+  // 스킬 버튼
+  const TGT = { single:'단일', all:'전체', ranged:'원거리', multi_3:'범위×3', self:'자신', ally:'아군' };
+  const TGT_KR = {
+    melee:'근거리', ranged:'원거리 선행', aoe_focus:'범위:집중',
+    aoe_burst:'범위:방출', heal:'회복', support:'지원', self:'자신',
+  };
+  document.getElementById('skill-grid-btns').innerHTML =
+    (actor.skill_ids || []).map(sid => {
+      const s    = skillMeta[sid];
+      if (!s) return '';
+      const noAP   = actor.ap < s.ap_cost;
+      const blocked = noAP || (rangeFired && s.target === 'ranged');
+      const tgtKr  = TGT_KR[s.target] || s.target;
+      const powerStr = s.power ? ' · ' + s.power : '';
+      return `
+      <button class="skill-btn ${blocked ? 'no-ap' : ''}"
+              onclick="doSkill(${sid})" ${blocked ? 'disabled' : ''}>
+        <div class="skill-ap-tag">AP ${s.ap_cost}</div>
+        <div class="skill-name-sm">${s.name}</div>
+        <div class="skill-meta-sm">${s.skill_type} · ${tgtKr}${powerStr}</div>
+      </button>`;
+    }).join('');
+
+  // 상태이상 표시
+  if (statuses) {
+    document.getElementById('actor-hdr').querySelector('.actor-meta').insertAdjacentHTML(
+      'afterend', `<div class="actor-status-row" style="margin-top:4px;">${statuses}</div>`
+    );
+  }
+}
+
+// ── 페이즈 배지 ──────────────────────────────────────────────────────────────
+function setPhase(phase) {
+  const el = document.getElementById('phase-badge');
+  if (phase === 'player') { el.className = 'phase-badge phase-player'; el.textContent = '행동 선택'; }
+  if (phase === 'enemy')  { el.className = 'phase-badge phase-enemy';  el.textContent = '적 행동 중'; }
+  if (phase === 'result') { el.className = 'phase-badge phase-result'; el.textContent = '전투 종료'; }
+}
+
+// ── 타겟 선택 모드 ──────────────────────────────────────────────────────────
+
+function enterSelectMode(mode, skillId, msg = null) {
+  selectMode     = mode;
+  pendingSkillId = skillId;
+
+  const banner = document.getElementById('select-banner');
+  // 모드별 색상
+  const isFriendly = mode === 'ally';
+  banner.className = `select-mode-banner ${isFriendly ? 'ally' : 'enemy'}-mode show`;
+  banner.style.background = '';
+  banner.style.color      = '';
+  banner.style.borderColor = '';
+  const defaultMsg = isFriendly ? '💚 대상 아군을 선택하세요' : '⚔ 공격할 적을 선택하세요';
+  document.getElementById('select-banner-text').textContent = msg || defaultMsg;
+  banner.querySelector('.banner-cancel').style.display = '';
+
+  // 스킬·방어·회피 버튼 흐리게
+  document.getElementById('skill-grid-btns').classList.add('skills-dimmed');
+  document.querySelector('.defend-row').classList.add('skills-dimmed');
+
+  // selectable 클래스
+  if (isFriendly) {
+    document.querySelectorAll('.party-member:not(.dead)').forEach(el => el.classList.add('selectable'));
+  } else {
+    document.querySelectorAll('.enemy-card:not(.dead)').forEach(el => el.classList.add('selectable'));
+  }
+}
+
+function cancelSelect() {
+  selectMode     = null;
+  pendingSkillId = null;
+  rangeFired     = false;
+  rangeTargetId  = null;
+  aoeFocusPicks  = [];
+
+  const banner = document.getElementById('select-banner');
+  banner.classList.remove('show');
+  banner.style.background = '';
+  banner.style.color      = '';
+  banner.style.borderColor = '';
+  banner.querySelector('.banner-cancel').style.display = '';
+
+  document.getElementById('skill-grid-btns').classList.remove('skills-dimmed');
+  document.querySelector('.defend-row').classList.remove('skills-dimmed');
+  document.querySelectorAll('.enemy-card, .party-member').forEach(el => {
+    el.classList.remove('selectable');
+  });
+}
+
+function confirmTarget(targetActorId) {
+  if (!selectMode || !pendingSkillId) return;
+  const sid = pendingSkillId;
+  cancelSelect();
+  doActionWithTarget('skill', sid, targetActorId);
+}
+
+// ── UI 잠금 ──────────────────────────────────────────────────────────────────
+function lockUI(lock) {
+  document.querySelectorAll('.skill-btn, .action-btn2').forEach(b => {
+    if (lock) b.disabled = true;
+    else if (b.classList.contains('skill-btn')) {
+      const sid  = parseInt(b.getAttribute('onclick')?.match(/\d+/)?.[0]);
+      const s    = skillMeta[sid];
+      const actor = currentActor();
+      b.disabled = !actor || (s && actor.ap < s.ap_cost);
+    } else { b.disabled = false; }
+  });
+}
+
+// ── 로그 ─────────────────────────────────────────────────────────────────────
+function addLog(msg, type = '') {
+  if (!msg) return;
+  const body  = document.getElementById('log-body');
+  const entry = document.createElement('div');
+
+  if (type === 'turn-sep') {
+    entry.className   = 'log-entry log-turn-sep';
+    entry.textContent = msg;
+  } else {
+    const cls = msg.includes('강점') ? 'log-strong' :
+                msg.includes('약점') ? 'log-weak'   :
+                msg.includes('승리') ? 'log-victory' :
+                msg.includes('패배') ? 'log-defeat'  :
+                type === 'system'    ? 'log-system'   : '';
+    entry.className   = 'log-entry ' + cls;
+    entry.textContent = msg;
+  }
+
+  body.prepend(entry);
+  while (body.children.length > 60) body.removeChild(body.lastChild);
+}
+
+// ── 카드 클릭 핸들러 ─────────────────────────────────────────────────────────
+
+function onEnemyClick(actorId, isDead) {
+  if (isDead) return;
+
+  // 후속 행동 선택 모드는 rangeFired보다 먼저 처리
+  if (selectMode === 'followup_enemy') {
+    const sid = pendingSkillId;
+    selectMode = null; pendingSkillId = null;
+    document.querySelectorAll('.enemy-card').forEach(el => el.classList.remove('selectable'));
+    doFollowUpAction('skill', sid, actorId);
+    return;
+  }
+
+  // 원거리 선행 완료 후 — 적 직접 클릭은 무시 (후속 행동 패널에서 선택)
+  if (rangeFired) {
+    return;
+  }
+
+  if (selectMode === 'enemy') {
+    confirmTarget(actorId);
+    return;
+  }
+
+  // 범위:집중 — 대상 추가 선택
+  if (selectMode === 'aoe_focus') {
+    const s     = skillMeta[pendingSkillId];
+    const maxPicks = s?.aoe_focus_count || 2;
+    aoeFocusPicks.push(actorId);
+    if (aoeFocusPicks.length >= maxPicks) {
+      // 선택 완료 → 실행
+      const picks = [...aoeFocusPicks];
+      const sid   = pendingSkillId;
+      cancelSelect();
+      doAoeFocus(sid, picks);
+    } else {
+      const remain = maxPicks - aoeFocusPicks.length;
+      document.getElementById('select-banner-text').textContent =
+        `집중 공격 — ${aoeFocusPicks.length}명 선택됨. ${remain}명 더 선택 (또는 확정 버튼)`;
+      // 확정 버튼 추가 (선택 인원이 1명 이상이면 표시)
+      const banner = document.getElementById('select-banner');
+      if (!banner.querySelector('.banner-confirm')) {
+        const btn = document.createElement('button');
+        btn.className = 'banner-cancel banner-confirm';
+        btn.textContent = '확정';
+        btn.style.background = 'var(--accent)';
+        btn.style.color = '#fff';
+        btn.onclick = () => {
+          const picks = [...aoeFocusPicks];
+          const sid   = pendingSkillId;
+          cancelSelect();
+          doAoeFocus(sid, picks);
+        };
+        banner.insertBefore(btn, banner.querySelector('.banner-cancel'));
+      }
+    }
+    return;
+  }
+
+  // 원거리 대상 선택 모드
+  if (selectMode === 'ranged_pick') {
+    const sid = pendingSkillId;
+    selectMode = null; pendingSkillId = null;
+    document.querySelectorAll('.enemy-card').forEach(el => el.classList.remove('selectable'));
+    fireRanged(sid, actorId);
+    return;
+  }
+}
+
+// 범위:집중 — picks 배열에 담긴 대상들에게 순서대로 공격
+async function doAoeFocus(skillId, picks) {
+  if (actionLock) return;
+  for (let i = 0; i < picks.length; i++) {
+    if (battleState?.status === 'finished') return;
+    if (i < picks.length - 1) {
+      // 중간 타격: callAPI만
+      actionLock = true; lockUI(true);
+      try {
+        const data = await callAPI('skill', skillId, picks[i]);
+        if (!data) return;
+        applyState(data);
+        if (data.status === 'finished') { showResult(data.reward || null); return; }
+      } finally { actionLock = false; lockUI(false); }
+      await new Promise(r => setTimeout(r, 300));
+    } else {
+      // 마지막 타격: doAction (advanceQueue 포함)
+      await doAction('skill', skillId, picks[i]);
+    }
+  }
+}
+
+function onAllyClick(actorId, isDead) {
+  if (isDead) return;
+  if (selectMode === 'ally') { confirmTarget(actorId); return; }
+  if (selectMode === 'followup_ally') {
+    const sid = pendingSkillId;
+    selectMode = null; pendingSkillId = null;
+    document.querySelectorAll('.party-member').forEach(el => el.classList.remove('selectable'));
+    doFollowUpAction('skill', sid, actorId);
+    return;
+  }
+}
+
+// ── 결과 ─────────────────────────────────────────────────────────────────────
+function showResult(rewardData = null) {
+  setPhase('result');
+  const players     = Object.values(actors).filter(a => a.team === 'player');
+  const playerAlive = players.some(p => p.hp > 0);
+  const overlay     = document.getElementById('result-overlay');
+  const title       = document.getElementById('result-title');
+  const sub         = document.getElementById('result-sub');
+  const statEl      = document.getElementById('result-stats');
+
+  if (playerAlive) {
+    title.textContent = '승리!';
+    title.className   = 'result-title win';
+    sub.textContent   = `${stats.turns}턴 만에 전투를 마쳤습니다.`;
+    addLog('— 전투 승리 —');
+  } else {
+    title.textContent = '패배...';
+    title.className   = 'result-title lose';
+    sub.textContent   = '파티가 전투 불능 상태가 되었습니다.';
+    addLog('— 전투 패배 —');
+  }
+
+  statEl.innerHTML = `
+    <div class="result-stat">
+      <div class="result-stat-val">${stats.turns}</div>
+      <div class="result-stat-lbl">턴 수</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat-val">${players.filter(p=>p.hp>0).length} / ${players.length}</div>
+      <div class="result-stat-lbl">생존 파티원</div>
+    </div>`;
+
+  const rewardBox = document.getElementById('reward-box');
+  if (playerAlive && rewardData) {
+    document.getElementById('reward-breakdown').innerHTML = `
+      <div class="reward-row total"><span>획득 골드</span><span>+${rewardData.gold}G</span></div>`;
+    rewardBox.style.display = 'block';
+  } else {
+    rewardBox.style.display = 'none';
+  }
+
+  setTimeout(() => overlay.classList.add('show'), 500);
+}
+
+// ── 철수 ─────────────────────────────────────────────────────────────────────
+function confirmRetreat() {
+  if (confirm('전투를 포기하고 메인으로 돌아가시겠습니까?')) location.href = 'index.html';
+}
+
+init();
+</script>
+</body>
+</html>
