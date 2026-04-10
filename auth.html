@@ -630,7 +630,7 @@ async function handleLogin(e) {
   try {
     const res = await fetch(`${API}/auth/login`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json' },
       body:    JSON.stringify({ username_or_email: ident, password: pw }),
     });
     const data = await res.json();
@@ -689,7 +689,7 @@ async function handleRegister(e) {
   try {
     const res = await fetch(`${API}/auth/register`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json' },
       body:    JSON.stringify({ username, email, password: pw }),
     });
     const data = await res.json();

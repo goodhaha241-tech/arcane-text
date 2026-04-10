@@ -516,8 +516,8 @@ async function init() {
   try {
     const res  = await fetch(`${API}/battle/start`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
-                'ngrok-skip-browser-warning': '1' },
+      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
+                 },
       body: JSON.stringify({
         mode: 'single',
         player_actor_ids: partyIds,
@@ -602,8 +602,8 @@ async function callAPI(type, skillId, targetId) {
   if (targetId != null) body.target_id = targetId;
   const res = await fetch(`${API}/battle/action`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
-                'ngrok-skip-browser-warning': '1' },
+    headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
+                 },
     body: JSON.stringify(body),
   });
   const data = await res.json();
@@ -665,8 +665,8 @@ async function runEnemyTurn() {
 
   try {
     const res  = await fetch(`${API}/battle/${battleId}`, {
-      headers: { 'Authorization': `Bearer ${token}`,
-                'ngrok-skip-browser-warning': '1' }
+      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}`,
+                 }
     });
     const data = await res.json();
     applyState(data);
