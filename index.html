@@ -729,7 +729,8 @@ document.getElementById('nav-username').textContent = username || '모험가';
 async function loadGold() {
   try {
     const res  = await fetch(`${API}/character/gold/me`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'Authorization': `Bearer ${token}`,
+                'ngrok-skip-browser-warning': '1' },
       cache: 'no-store',
     });
     if (!res.ok) {
@@ -861,7 +862,8 @@ async function doUpgrade(charId, nextStage, cost) {
   try {
     const res = await fetch(`${API}/character/${charId}/upgrade`, {
       method: 'PATCH',
-      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`,
+                'ngrok-skip-browser-warning': '1' },
       body: JSON.stringify({ str_add, int_add, wis_add, agi_add }),
     });
     const data = await res.json();
@@ -893,7 +895,8 @@ function showToast(msg, dur = 2000) {
 async function loadCharacters() {
   try {
     const res = await fetch(`${API}/character/me`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${token}`,
+                'ngrok-skip-browser-warning': '1' }
     });
     if (res.status === 401) { location.href = 'auth.html'; return; }
     const data = await res.json();
@@ -1077,7 +1080,8 @@ async function handleLogout() {
   try {
     await fetch(`${API}/auth/logout`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${token}`,
+                'ngrok-skip-browser-warning': '1' }
     });
   } finally {
     localStorage.clear();
@@ -1135,7 +1139,8 @@ async function buyItem(itemId) {
   const url = urls[itemId];
   if (!url) return;
   try {
-    const res  = await fetch(url, { method:'POST', headers:{ 'Authorization':`Bearer ${token}` } });
+    const res  = await fetch(url, { method:'POST', headers:{ 'Authorization':`Bearer ${token}`,
+                'ngrok-skip-browser-warning': '1' } });
     const data = await res.json();
     if (!res.ok) { showToast(data.detail || '구매 실패'); return; }
     showShopResult(itemId, data);
@@ -1157,7 +1162,8 @@ async function buyEnhance(charId) {
   closeEnhanceSelect();
   try {
     const res  = await fetch(`${API}/character/shop/buy/recruit-enhance/${charId}`, {
-      method:'POST', headers:{ 'Authorization':`Bearer ${token}` }
+      method:'POST', headers:{ 'Authorization':`Bearer ${token}`,
+                'ngrok-skip-browser-warning': '1' }
     });
     const data = await res.json();
     if (!res.ok) { showToast(data.detail || '구매 실패'); return; }
