@@ -507,7 +507,7 @@ async function init() {
 
   // 스킬 메타 로드 (maker-skills + 고유기 포함 전체)
   try {
-    const res  = await fetch(`${API}/character/meta/maker-skills`);
+    const res  = await fetch(`${API}/character/meta/maker-skills`, { headers: { 'ngrok-skip-browser-warning': '1', } });
     const data = await res.json();
     (data.skills || []).forEach(s => { skillMeta[s.id] = s; });
   } catch {}
@@ -516,8 +516,7 @@ async function init() {
   try {
     const res  = await fetch(`${API}/battle/start`, {
       method:  'POST',
-      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
-                 },
+      headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({
         mode: 'single',
         player_actor_ids: partyIds,
@@ -602,8 +601,7 @@ async function callAPI(type, skillId, targetId) {
   if (targetId != null) body.target_id = targetId;
   const res = await fetch(`${API}/battle/action`, {
     method: 'POST',
-    headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`,
-                 },
+    headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     body: JSON.stringify(body),
   });
   const data = await res.json();
@@ -665,8 +663,7 @@ async function runEnemyTurn() {
 
   try {
     const res  = await fetch(`${API}/battle/${battleId}`, {
-      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}`,
-                 }
+      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
     applyState(data);
