@@ -708,7 +708,7 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-const API      = 'https://conditions-interpreted-dennis-marker.trycloudflare.com';
+const API      = 'https://meteorically-unhalting-tom.ngrok-free.dev';
 const token    = localStorage.getItem('access_token');
 const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
@@ -721,7 +721,7 @@ document.getElementById('nav-username').textContent = username || '모험가';
 async function loadGold() {
   try {
     const res  = await fetch(`${API}/character/gold/me`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}` },
       cache: 'no-store',
     });
     if (!res.ok) {
@@ -866,7 +866,7 @@ async function confirmUpgrade() {
   closeUpgradeModal();
   try {
     const res=await fetch(`${API}/character/${_upgradeCharId}/upgrade`,{
-      method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      method:'PATCH',headers:{ 'ngrok-skip-browser-warning': '1','Content-Type':'application/json','Authorization':`Bearer ${token}`},
       body:JSON.stringify({str_add,int_add,wis_add,agi_add}),
     });
     const data=await res.json();
@@ -888,7 +888,7 @@ function showToast(msg, dur = 2000) {
 async function loadCharacters() {
   try {
     const res = await fetch(`${API}/character/me`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}` }
     });
     if (res.status === 401) { location.href = 'auth.html'; return; }
     const data = await res.json();
@@ -1072,7 +1072,7 @@ async function handleLogout() {
   try {
     await fetch(`${API}/auth/logout`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'ngrok-skip-browser-warning': '1', 'Authorization': `Bearer ${token}` }
     });
   } finally {
     localStorage.clear();
@@ -1088,7 +1088,7 @@ let shopItems=[];
 async function renderShopPanel(){
   const grid=document.getElementById('shop-grid'); if(!grid) return;
   if(!shopItems.length){
-    try{const res=await fetch(`${API}/character/shop/items`,{headers:{'ngrok-skip-browser-warning':'1'}});const data=await res.json();shopItems=data.items||[];}
+    try{const res=await fetch(`${API}/character/shop/items`,{headers:{ 'ngrok-skip-browser-warning': '1',}});const data=await res.json();shopItems=data.items||[];}
     catch{grid.innerHTML='<div style="color:var(--red)">상점 로드 실패</div>';return;}
   }
   const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡'};
@@ -1099,7 +1099,7 @@ async function buyItem(itemId){
   if(itemId==='recruit_enhance'){const r=characters.filter(c=>c.character_type==='recruited'&&(c.growth_stage||0)<2);if(!r.length){showToast('강화 가능한 영입 캐릭터 없음');return;}openEnhanceSelect(r);return;}
   const urls={skill_scroll:`${API}/character/shop/buy/skill-scroll`,recruit_ticket:`${API}/character/shop/buy/recruit-ticket`};
   const url=urls[itemId];if(!url)return;
-  try{const res=await fetch(url,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult(itemId,data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
+  try{const res=await fetch(url,{method:'POST',headers:{ 'ngrok-skip-browser-warning': '1','Authorization':`Bearer ${token}`}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult(itemId,data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
 }
 function openEnhanceSelect(r){
   document.getElementById('enhance-select-list').innerHTML=r.map(c=>`<div class="enhance-select-item" onclick="buyEnhance(${c.id})">${c.name} <span style="color:var(--text3);font-size:.68rem;">강화 ${c.growth_stage||0}/2단계</span></div>`).join('');
@@ -1107,7 +1107,7 @@ function openEnhanceSelect(r){
 }
 async function buyEnhance(charId){
   closeEnhanceSelect();
-  try{const res=await fetch(`${API}/character/shop/buy/recruit-enhance/${charId}`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult('recruit_enhance',data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
+  try{const res=await fetch(`${API}/character/shop/buy/recruit-enhance/${charId}`,{method:'POST',headers:{ 'ngrok-skip-browser-warning': '1','Authorization':`Bearer ${token}`}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult('recruit_enhance',data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
 }
 function closeEnhanceSelect(){document.getElementById('enhance-select-overlay').classList.remove('show');}
 function showShopResult(itemId,data){
