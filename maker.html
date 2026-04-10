@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCANE TEXT — 캐릭터 메이커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f7f5f2;
+  --bg2:      #edeae4;
+  --surface:  #ffffff;
+  --border:   #ddd8d0;
+  --border2:  #c8c2b8;
+  --text:     #1c1917;
+  --text2:    #6b6560;
+  --text3:    #9c9590;
+  --accent:   #b5451b;
+  --accent2:  #c8682a;
+  --gold:     #9a7c3f;
+  --green:    #3a7c52;
+  --green-bg: #f0fdf4;
+  --error:    #c0392b;
+  --shadow:   0 1px 4px rgba(28,25,23,.07);
+  --shadow2:  0 4px 20px rgba(28,25,23,.10);
+  --r:        10px;
+  --TOTAL:    60;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── 네비 ─────────────────────────────── */
+.nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 54px;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-brand {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem; font-weight: 700;
+  letter-spacing: .1em; color: var(--text);
+}
+.nav-brand span { color: var(--accent); }
+.nav-back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .8rem; color: var(--text2);
+  background: none; border: none;
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  padding: 6px 12px; border-radius: 6px;
+  transition: all .15s;
+}
+.nav-back:hover { background: var(--bg2); color: var(--text); }
+
+/* ── 레이아웃 ──────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+@media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+/* ── 카드 ─────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px 22px;
+  box-shadow: var(--shadow);
+}
+.card + .card { margin-top: 16px; }
+.card-title {
+  font-family: 'Cinzel', serif;
+  font-size: .9rem; font-weight: 600;
+  letter-spacing: .06em;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── 폼 필드 ──────────────────────────── */
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-size: .73rem; font-weight: 500;
+  color: var(--text2);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 7px;
+}
+.field input[type=text] {
+  width: 100%; padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: .88rem; color: var(--text);
+  background: var(--bg);
+  outline: none; transition: all .18s;
+}
+.field input[type=text]:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(181,69,27,.1);
+}
+.hint { font-size: .72rem; color: var(--text3); margin-top: 4px; }
+
+/* ── 마스터리 선택 ─────────────────────── */
+.mastery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.mastery-btn {
+  padding: 10px 4px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: .78rem; font-weight: 500;
+  cursor: pointer;
+  transition: all .18s;
+  color: var(--text2);
+  text-align: center;
+}
+.mastery-btn:hover { border-color: var(--border2); color: var(--text); background: var(--bg2); }
+.mastery-btn.active {
+  border-color: var(--accent);
+  background: #fdf8f6;
+  color: var(--accent);
+}
+.mastery-icon { font-size: .9rem; display: block; margin-bottom: 3px; }
+
+/* ── 스탯 슬라이더 ─────────────────────── */
+.stat-pool-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.pool-label { font-size: .78rem; color: var(--text2); }
+.pool-display {
+  display: flex; align-items: baseline; gap: 3px;
+}
+.pool-remain {
+  font-size: 1.4rem; font-weight: 700;
+  font-family: 'Cinzel', serif;
+  color: var(--accent);
+  transition: color .2s;
+}
+.pool-remain.empty { color: var(--green); }
+.pool-remain.over  { color: var(--error); }
+.pool-total { font-size: .8rem; color: var(--text3); }
+
+.stat-slider-row { margin-bottom: 20px; }
+.stat-slider-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.stat-name { font-size: .8rem; font-weight: 600; }
+.stat-desc { font-size: .7rem; color: var(--text3); }
+.stat-value-box {
+  font-size: .85rem; font-weight: 700;
+  font-family: 'Cinzel', serif;
+  color: var(--text);
+  min-width: 28px; text-align: right;
+}
+.stat-slider-wrap { position: relative; }
+input[type=range] {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg2);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(181,69,27,.3);
+  transition: transform .1s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type=range]:disabled::-webkit-slider-thumb { background: var(--text3); cursor: not-allowed; }
+.stat-range-labels {
+  display: flex; justify-content: space-between;
+  margin-top: 4px;
+}
+.stat-range-labels span { font-size: .65rem; color: var(--text3); }
+
+/* 스탯 영향 뱃지 */
+.stat-effects {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  margin-top: 6px;
+}
+.effect-tag {
+  font-size: .62rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--bg2);
+  color: var(--text3);
+  border: 1px solid var(--border);
+}
+
+/* ── 스킬 탭 ───────────────────────────── */
+.skill-tab-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.skill-tab {
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: .76rem; font-weight: 500;
+  cursor: pointer; color: var(--text2);
+  transition: all .15s; white-space: nowrap;
+}
+.skill-tab:hover { border-color: var(--border2); color: var(--text); background: var(--bg2); }
+.skill-tab.active {
+  border-color: var(--accent);
+  background: #fdf8f6;
+  color: var(--accent);
+}
+.skill-tab.extra-tab {
+  border-style: dashed;
+  color: var(--text3);
+}
+.skill-tab.extra-tab.active {
+  border-style: solid;
+  border-color: var(--gold);
+  background: var(--gold-bg, #faf6ec);
+  color: var(--gold);
+}
+
+/* 추가 마스터리 선택 그리드 */
+.extra-mastery-grid {
+  display: flex; gap: 7px; flex-wrap: wrap;
+}
+.extra-mastery-btn {
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: .76rem; font-weight: 500;
+  cursor: pointer; color: var(--text2);
+  transition: all .15s;
+}
+.extra-mastery-btn:hover { border-color: var(--border2); color: var(--text); background: var(--bg2); }
+.extra-mastery-btn.active {
+  border-color: var(--gold);
+  background: var(--gold-bg, #faf6ec);
+  color: var(--gold);
+}
+.extra-mastery-btn:disabled {
+  opacity: .35; cursor: not-allowed;
+}
+
+/* 잠금 안내 */
+.skill-lock-info {
+  font-size: .73rem; color: var(--text3);
+  padding: 8px 12px;
+  background: var(--bg2);
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border-left: 3px solid var(--border2);
+}
+
+/* 스킬 그리드 — 기존 .skill-grid 클래스는 flex column 이므로 id로만 사용 */
+#skill-grid { display: flex; flex-direction: column; gap: 6px; }
+.skill-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .15s;
+  background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  text-align: left;
+  width: 100%;
+}
+.skill-item:hover { border-color: var(--border2); background: var(--bg2); }
+.skill-item.selected { border-color: var(--accent); background: #fdf8f6; }
+.skill-ap {
+  font-size: .65rem; font-weight: 700;
+  background: var(--bg2); color: var(--text2);
+  padding: 2px 5px; border-radius: 3px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.skill-item.selected .skill-ap { background: var(--accent); color: #fff; border-color: var(--accent); }
+.skill-info { flex: 1; min-width: 0; }
+.skill-name { font-size: .8rem; font-weight: 500; }
+.skill-type { font-size: .68rem; color: var(--text3); margin-top: 1px; }
+.skill-check {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; color: transparent;
+  transition: all .15s;
+}
+.skill-item.selected .skill-check {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.skill-count-badge {
+  font-size: .72rem; color: var(--text2);
+  font-weight: 500;
+}
+
+/* ── 개성 선택 ─────────────────────────── */
+.personality-grid { display: flex; flex-direction: column; gap: 6px; }
+.personality-item {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .15s;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.personality-item:hover { border-color: var(--border2); background: var(--bg2); }
+.personality-item.selected { border-color: var(--accent); background: #fdf8f6; }
+.personality-name { font-size: .8rem; font-weight: 600; margin-bottom: 2px; }
+.personality-desc { font-size: .7rem; color: var(--text2); }
+.personality-type {
+  font-size: .63rem; font-weight: 600;
+  padding: 1px 5px; border-radius: 3px;
+  margin-right: 5px;
+}
+.type-passive { background: #eff6ff; color: #2563a8; border: 1px solid #bfd7f5; }
+.type-trigger { background: #fdf8f6; color: var(--accent); border: 1px solid #f0c4b0; }
+
+/* ── 사이드바 미리보기 ─────────────────── */
+.preview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: sticky; top: 70px;
+}
+.preview-header {
+  padding: 16px 18px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #fff;
+}
+.preview-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem; font-weight: 600;
+  margin-bottom: 3px;
+}
+.preview-sub { font-size: .75rem; opacity: .8; }
+.preview-body { padding: 18px; }
+
+/* 레이더 차트 영역 */
+.radar-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 18px;
+}
+
+.preview-stats { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.preview-stat-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.preview-stat-label { font-size: .72rem; color: var(--text2); width: 28px; }
+.preview-stat-bar-bg {
+  flex: 1; height: 5px;
+  background: var(--bg2); border-radius: 3px; overflow: hidden;
+}
+.preview-stat-bar {
+  height: 100%; background: var(--accent);
+  border-radius: 3px; transition: width .3s ease;
+}
+.preview-stat-val { font-size: .72rem; font-weight: 600; width: 22px; text-align: right; }
+
+.preview-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+.preview-info-row {
+  display: flex; justify-content: space-between;
+  font-size: .78rem; padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+.preview-info-row:last-child { border-bottom: none; }
+.preview-info-key { color: var(--text2); }
+.preview-info-val { font-weight: 600; }
+
+/* 생성 버튼 */
+.create-btn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #fff;
+  border: none; border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: .88rem; font-weight: 600;
+  cursor: pointer; letter-spacing: .04em;
+  transition: all .2s; margin-top: 16px;
+}
+.create-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(181,69,27,.3);
+}
+.create-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.create-btn.loading { color: transparent; pointer-events: none; position: relative; }
+.create-btn.loading::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 18px; height: 18px; margin: -9px 0 0 -9px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+/* 알림 */
+.alert {
+  padding: 10px 13px; border-radius: 7px;
+  font-size: .8rem; margin-top: 14px;
+  display: none;
+}
+.alert.show { display: block; animation: fadeIn .2s ease; }
+.alert-error { background: #fef2f2; border: 1px solid #fecaca; color: var(--error); }
+.alert-success { background: var(--green-bg); border: 1px solid #bbf7d0; color: var(--green); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">ARC<span>A</span>NE TEXT</div>
+  <button class="nav-back" onclick="location.href='index.html'">← 메인으로</button>
+</nav>
+
+<div class="layout">
+
+  <!-- 왼쪽: 편집 영역 -->
+  <div>
+
+    <!-- 1. 기본 정보 -->
+    <div class="card">
+      <div class="card-title">기본 정보</div>
+      <div class="field">
+        <label>캐릭터 이름</label>
+        <input type="text" id="char-name" placeholder="1~20자" maxlength="20"
+               oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>마스터리 (1개 선택)</label>
+        <div class="mastery-grid" id="mastery-grid">
+          <button class="mastery-btn" data-mastery="아공" onclick="selectMastery(this)">
+            <span class="mastery-icon">◈</span>아공
+          </button>
+          <button class="mastery-btn" data-mastery="마도" onclick="selectMastery(this)">
+            <span class="mastery-icon">✦</span>마도
+          </button>
+          <button class="mastery-btn" data-mastery="무투" onclick="selectMastery(this)">
+            <span class="mastery-icon">⊕</span>무투
+          </button>
+          <button class="mastery-btn" data-mastery="원소" onclick="selectMastery(this)">
+            <span class="mastery-icon">❋</span>원소
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 스탯 배분 -->
+    <div class="card">
+      <div class="card-title">
+        스탯 배분
+        <span class="skill-count-badge">메이커 제한: 개별 최대 30</span>
+      </div>
+
+      <div class="stat-pool-header">
+        <span class="pool-label">남은 포인트</span>
+        <div class="pool-display">
+          <span class="pool-remain" id="pool-remain">60</span>
+          <span class="pool-total">/ 60</span>
+        </div>
+      </div>
+
+      <!-- 힘 -->
+      <div class="stat-slider-row">
+        <div class="stat-slider-header">
+          <div>
+            <span class="stat-name">힘 (STR)</span>
+            <div class="stat-effects">
+              <span class="effect-tag">공격력 max 기준</span>
+              <span class="effect-tag">체력 계산</span>
+              <span class="effect-tag">방어 경감</span>
+            </div>
+          </div>
+          <span class="stat-value-box" id="val-str">10</span>
+        </div>
+        <input type="range" id="slider-str" min="10" max="30" value="10" step="1"
+               oninput="onSlider('str')">
+        <div class="stat-range-labels"><span>10</span><span>30</span></div>
+      </div>
+
+      <!-- 민첩 -->
+      <div class="stat-slider-row">
+        <div class="stat-slider-header">
+          <div>
+            <span class="stat-name">민첩 (AGI)</span>
+            <div class="stat-effects">
+              <span class="effect-tag">행동 순서</span>
+              <span class="effect-tag">체력 계산</span>
+              <span class="effect-tag">회피 경감</span>
+            </div>
+          </div>
+          <span class="stat-value-box" id="val-agi">10</span>
+        </div>
+        <input type="range" id="slider-agi" min="10" max="30" value="10" step="1"
+               oninput="onSlider('agi')">
+        <div class="stat-range-labels"><span>10</span><span>30</span></div>
+      </div>
+
+      <!-- 지능 -->
+      <div class="stat-slider-row">
+        <div class="stat-slider-header">
+          <div>
+            <span class="stat-name">지능 (INT)</span>
+            <div class="stat-effects">
+              <span class="effect-tag">기술 보정</span>
+              <span class="effect-tag">방어 난수</span>
+            </div>
+          </div>
+          <span class="stat-value-box" id="val-int">10</span>
+        </div>
+        <input type="range" id="slider-int" min="10" max="30" value="10" step="1"
+               oninput="onSlider('int')">
+        <div class="stat-range-labels"><span>10</span><span>30</span></div>
+      </div>
+
+      <!-- 지혜 -->
+      <div class="stat-slider-row">
+        <div class="stat-slider-header">
+          <div>
+            <span class="stat-name">지혜 (WIS)</span>
+            <div class="stat-effects">
+              <span class="effect-tag">공격력 min 기준</span>
+              <span class="effect-tag">회복/회피 보정</span>
+            </div>
+          </div>
+          <span class="stat-value-box" id="val-wis">10</span>
+        </div>
+        <input type="range" id="slider-wis" min="10" max="30" value="10" step="1"
+               oninput="onSlider('wis')">
+        <div class="stat-range-labels"><span>10</span><span>30</span></div>
+      </div>
+
+      <div id="stat-alert" class="alert alert-error"></div>
+    </div>
+
+    <!-- 3. 스킬 편성 -->
+    <div class="card">
+      <div class="card-title">
+        스킬 편성
+        <span class="skill-count-badge" id="skill-count-badge">0 / 6</span>
+      </div>
+
+      <!-- 스킬 탭 바 -->
+      <div class="skill-tab-bar" id="skill-tab-bar">
+        <button class="skill-tab active" data-tab="무속성" onclick="switchSkillTab('무속성', this)">
+          무속성
+        </button>
+        <!-- 마스터리 탭은 마스터리 선택 후 동적으로 추가됨 -->
+      </div>
+
+      <!-- 추가 마스터리 선택 패널 (추가 탭 클릭 시 노출) -->
+      <div id="extra-mastery-panel" style="display:none; margin-bottom:14px;">
+        <div style="font-size:.75rem; color:var(--text2); margin-bottom:8px; font-weight:500;">
+          추가할 마스터리를 선택하세요 (1종)
+        </div>
+        <div class="extra-mastery-grid" id="extra-mastery-grid"></div>
+      </div>
+
+      <div id="skill-grid">로딩 중...</div>
+    </div>
+
+    <!-- 4. 개성 선택 -->
+    <div class="card">
+      <div class="card-title">
+        개성 선택
+        <span class="skill-count-badge" id="personality-count-badge">0 / 2</span>
+      </div>
+      <div class="hint" style="margin-bottom:14px;">슬롯 2·3번은 강화 후 해금됩니다. 지금은 미리 선택만 해두세요.</div>
+      <div class="personality-grid" id="personality-grid">로딩 중...</div>
+    </div>
+
+  </div>
+
+  <!-- 오른쪽: 미리보기 -->
+  <div>
+    <div class="preview-card">
+      <div class="preview-header">
+        <div class="preview-name" id="preview-name">이름 미입력</div>
+        <div class="preview-sub" id="preview-sub">마스터리 미선택 · 메이커</div>
+      </div>
+      <div class="preview-body">
+
+        <!-- 스탯 바 -->
+        <div class="preview-stats">
+          <div class="preview-stat-row">
+            <span class="preview-stat-label">힘</span>
+            <div class="preview-stat-bar-bg">
+              <div class="preview-stat-bar" id="bar-str" style="width:33%"></div>
+            </div>
+            <span class="preview-stat-val" id="pval-str">10</span>
+          </div>
+          <div class="preview-stat-row">
+            <span class="preview-stat-label">민첩</span>
+            <div class="preview-stat-bar-bg">
+              <div class="preview-stat-bar" id="bar-agi" style="width:33%"></div>
+            </div>
+            <span class="preview-stat-val" id="pval-agi">10</span>
+          </div>
+          <div class="preview-stat-row">
+            <span class="preview-stat-label">지능</span>
+            <div class="preview-stat-bar-bg">
+              <div class="preview-stat-bar" id="bar-int" style="width:33%"></div>
+            </div>
+            <span class="preview-stat-val" id="pval-int">10</span>
+          </div>
+          <div class="preview-stat-row">
+            <span class="preview-stat-label">지혜</span>
+            <div class="preview-stat-bar-bg">
+              <div class="preview-stat-bar" id="bar-wis" style="width:33%"></div>
+            </div>
+            <span class="preview-stat-val" id="pval-wis">10</span>
+          </div>
+        </div>
+
+        <hr class="preview-divider">
+
+        <div class="preview-info-row">
+          <span class="preview-info-key">체력</span>
+          <span class="preview-info-val" id="preview-hp">200</span>
+        </div>
+        <div class="preview-info-row">
+          <span class="preview-info-key">공격력 기준</span>
+          <span class="preview-info-val" id="preview-atk">10</span>
+        </div>
+        <div class="preview-info-row">
+          <span class="preview-info-key">방어 경감</span>
+          <span class="preview-info-val" id="preview-def">16.7%</span>
+        </div>
+        <div class="preview-info-row">
+          <span class="preview-info-key">회피 경감</span>
+          <span class="preview-info-val" id="preview-eva">16.7%</span>
+        </div>
+        <div class="preview-info-row">
+          <span class="preview-info-key">장착 스킬</span>
+          <span class="preview-info-val" id="preview-skills">0개</span>
+        </div>
+        <div class="preview-info-row">
+          <span class="preview-info-key">개성</span>
+          <span class="preview-info-val" id="preview-personality">미선택</span>
+        </div>
+
+        <div id="create-alert" class="alert alert-error"></div>
+        <div id="create-success" class="alert alert-success"></div>
+
+        <button class="create-btn" id="create-btn" onclick="createCharacter()">
+          캐릭터 생성
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API   = 'https://necklace-transcripts-proteins-respiratory.trycloudflare.com  ';
+const token = localStorage.getItem('access_token');
+if (!token) location.href = 'auth.html';
+
+const TOTAL    = 60;
+const MIN_STAT = 10;
+const MAX_STAT = 30;
+const STATS    = ['str','agi','int','wis'];
+
+const AP_LOCK_THRESHOLD = 4;
+const ALL_MASTERIES = ['아공','마도','무투','원소'];
+const MASTERY_ICON  = { 아공:'◈', 마도:'✦', 무투:'⊕', 원소:'❋' };
+
+let selectedMastery     = null;
+let extraMastery        = null;
+let activeTab           = '무속성';
+let selectedSkills      = new Set();
+let selectedPersonality = new Set();
+let skillData           = [];
+let personalityData     = [];
+
+// ── 슬라이더 ─────────────────────────────────────────────────────────────────
+function getStats() {
+  return Object.fromEntries(STATS.map(s => [s, parseInt(document.getElementById(`slider-${s}`).value)]));
+}
+
+function onSlider(changed) {
+  const stats  = getStats();
+  const total  = Object.values(stats).reduce((a,b) => a+b, 0);
+  const remain = TOTAL - total;
+  const poolEl = document.getElementById('pool-remain');
+  poolEl.textContent = remain;
+  poolEl.className   = 'pool-remain' + (remain === 0 ? ' empty' : remain < 0 ? ' over' : '');
+  if (remain < 0) {
+    const slider = document.getElementById(`slider-${changed}`);
+    slider.value = parseInt(slider.value) + remain;
+    return onSlider(null);
+  }
+  STATS.forEach(s => {
+    document.getElementById(`val-${s}`).textContent =
+      parseInt(document.getElementById(`slider-${s}`).value);
+  });
+  STATS.forEach(s => {
+    const slider = document.getElementById(`slider-${s}`);
+    slider.max = remain === 0 ? slider.value : MAX_STAT;
+  });
+  updatePreview();
+}
+
+// ── 마스터리 선택 ─────────────────────────────────────────────────────────────
+function selectMastery(btn) {
+  document.querySelectorAll('.mastery-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedMastery = btn.dataset.mastery;
+  extraMastery = null;
+  // 속성 안 맞는 선택 스킬 제거
+  selectedSkills.forEach(id => {
+    const s = skillData.find(x => x.id === id);
+    if (s && s.skill_type !== '무속성' && s.skill_type !== selectedMastery) selectedSkills.delete(id);
+  });
+  activeTab = selectedMastery;
+  rebuildTabs();
+  updatePreview();
+}
+
+// ── 탭 재구성 ────────────────────────────────────────────────────────────────
+function rebuildTabs() {
+  const bar = document.getElementById('skill-tab-bar');
+  let tabs = [{ key: '무속성', label: '무속성' }];
+  if (selectedMastery) tabs.push({ key: selectedMastery, label: MASTERY_ICON[selectedMastery] + ' ' + selectedMastery });
+  if (extraMastery)    tabs.push({ key: extraMastery,    label: MASTERY_ICON[extraMastery]    + ' ' + extraMastery });
+  if (selectedMastery) tabs.push({ key: '__extra__', label: '+ 추가', extra: true });
+
+  bar.innerHTML = tabs.map(t => `
+    <button class="skill-tab ${t.extra ? 'extra-tab' : ''} ${activeTab === t.key ? 'active' : ''}"
+            data-tab="${t.key}" onclick="switchSkillTab('${t.key}', this)">${t.label}</button>`
+  ).join('');
+
+  const validTabs = tabs.map(t => t.key);
+  if (!validTabs.includes(activeTab)) { activeTab = '무속성'; }
+  renderSkillsForTab();
+}
+
+// ── 탭 전환 ──────────────────────────────────────────────────────────────────
+function switchSkillTab(tab, btn) {
+  document.querySelectorAll('.skill-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === '__extra__') {
+    activeTab = '__extra__';
+    document.getElementById('extra-mastery-panel').style.display = 'block';
+    renderExtraMasteryPanel();
+    document.getElementById('skill-grid').innerHTML =
+      '<div class="skill-lock-info">추가 마스터리를 선택하면 해당 기술 목록이 표시됩니다.</div>';
+    return;
+  }
+  activeTab = tab;
+  document.getElementById('extra-mastery-panel').style.display = 'none';
+  renderSkillsForTab();
+}
+
+// ── 추가 마스터리 패널 ────────────────────────────────────────────────────────
+function renderExtraMasteryPanel() {
+  const panel = document.getElementById('extra-mastery-grid');
+  const available = ALL_MASTERIES.filter(m => m !== selectedMastery);
+  panel.innerHTML = available.map(m => `
+    <button class="extra-mastery-btn ${extraMastery === m ? 'active' : ''}"
+            onclick="selectExtraMastery('${m}')">${MASTERY_ICON[m]} ${m}</button>`
+  ).join('');
+}
+
+function selectExtraMastery(mastery) {
+  if (extraMastery === mastery) {
+    selectedSkills.forEach(id => {
+      const s = skillData.find(x => x.id === id);
+      if (s?.skill_type === mastery) selectedSkills.delete(id);
+    });
+    extraMastery = null;
+    activeTab = '무속성';
+  } else {
+    if (extraMastery) {
+      selectedSkills.forEach(id => {
+        const s = skillData.find(x => x.id === id);
+        if (s?.skill_type === extraMastery) selectedSkills.delete(id);
+      });
+    }
+    extraMastery = mastery;
+    activeTab = mastery;
+  }
+  rebuildTabs();
+  updatePreview();
+}
+
+// ── 스킬 렌더 ────────────────────────────────────────────────────────────────
+function renderSkillsForTab() {
+  const grid = document.getElementById('skill-grid');
+  if (!skillData.length) { grid.innerHTML = '<div style="color:var(--text3);font-size:.8rem;">로딩 중...</div>'; return; }
+
+  const tabSkills = skillData.filter(s =>
+    activeTab === '무속성' ? s.skill_type === '무속성' : s.skill_type === activeTab
+  );
+
+  if (!tabSkills.length) {
+    grid.innerHTML = '<div class="skill-lock-info">이 마스터리에 해당하는 기술이 없습니다.</div>';
+    return;
+  }
+
+  const unlocked = tabSkills.filter(s => s.ap_cost < AP_LOCK_THRESHOLD);
+  const locked   = tabSkills.filter(s => s.ap_cost >= AP_LOCK_THRESHOLD);
+  const TGT = { single:'단일', all:'전체', ranged:'원거리', multi_3:'범위×3', self:'자신', ally:'아군' };
+
+  const item = (s, isLocked) => {
+    const sel = selectedSkills.has(s.id);
+    const tgt = TGT[s.target] || s.target;
+    const pow = s.power ? `· 위력 ${s.power}` : '';
+    if (isLocked) return `
+      <div class="skill-item" style="opacity:.4;cursor:not-allowed;background:var(--bg2);">
+        <span class="skill-ap" style="background:var(--bg2);color:var(--text3);border-color:var(--border);">AP ${s.ap_cost}</span>
+        <div class="skill-info">
+          <div class="skill-name" style="color:var(--text3);">${s.name}</div>
+          <div class="skill-type">${s.skill_type} · ${tgt} ${pow}</div>
+        </div>
+        <div style="font-size:.65rem;color:var(--text3);white-space:nowrap;">강화 후 해금</div>
+      </div>`;
+    return `
+      <button class="skill-item ${sel ? 'selected' : ''}" onclick="toggleSkill(${s.id})">
+        <span class="skill-ap">AP ${s.ap_cost}</span>
+        <div class="skill-info">
+          <div class="skill-name">${s.name}</div>
+          <div class="skill-type">${s.skill_type} · ${tgt} ${pow}</div>
+        </div>
+        <div class="skill-check">${sel ? '✓' : ''}</div>
+      </button>`;
+  };
+
+  let html = unlocked.map(s => item(s, false)).join('');
+  if (locked.length) {
+    html += `<div class="skill-lock-info" style="margin-top:10px;">강화 1단계 이후 해금 — AP ${AP_LOCK_THRESHOLD} 이상 기술</div>`;
+    html += locked.map(s => item(s, true)).join('');
+  }
+  grid.innerHTML = html || '<div class="skill-lock-info">선택 가능한 기술이 없습니다.</div>';
+}
+
+// ── 스킬 토글 ────────────────────────────────────────────────────────────────
+function toggleSkill(id) {
+  const s = skillData.find(x => x.id === id);
+  if (!s) return;
+  if (s.ap_cost >= AP_LOCK_THRESHOLD) {
+    showAlert('create-alert', `AP ${AP_LOCK_THRESHOLD} 이상 기술은 강화 1단계 이후 해금됩니다.`);
+    setTimeout(() => hideAlert('create-alert'), 2000); return;
+  }
+  const allowed = new Set(['무속성']);
+  if (selectedMastery) allowed.add(selectedMastery);
+  if (extraMastery)    allowed.add(extraMastery);
+  if (!allowed.has(s.skill_type)) {
+    showAlert('create-alert', `편성 가능 속성: ${[...allowed].join(', ')}`);
+    setTimeout(() => hideAlert('create-alert'), 2000); return;
+  }
+  if (selectedSkills.has(id)) {
+    selectedSkills.delete(id);
+  } else {
+    if (selectedSkills.size >= 6) {
+      showAlert('create-alert', '스킬은 최대 6개까지 선택할 수 있습니다.');
+      setTimeout(() => hideAlert('create-alert'), 2000); return;
+    }
+    selectedSkills.add(id);
+  }
+  document.getElementById('skill-count-badge').textContent = `${selectedSkills.size} / 6`;
+  renderSkillsForTab();
+  updatePreview();
+}
+
+// ── 스킬 / 개성 로드 ─────────────────────────────────────────────────────────
+async function loadSkills() {
+  try {
+    const res = await fetch(`${API}/character/meta/maker-skills`);
+    const data = await res.json();
+    skillData = data.skills || [];
+    rebuildTabs();
+  } catch {
+    document.getElementById('skill-grid').innerHTML =
+      '<div style="color:var(--text3);font-size:.8rem;">스킬 목록을 불러올 수 없습니다.</div>';
+  }
+}
+
+async function loadPersonality() {
+  try {
+    const res = await fetch(`${API}/character/meta/maker-pool`);
+    const data = await res.json();
+    personalityData = data.pool || [];
+    renderPersonality();
+  } catch {
+    document.getElementById('personality-grid').innerHTML =
+      '<div style="color:var(--text3);font-size:.8rem;">개성 목록을 불러올 수 없습니다.</div>';
+  }
+}
+
+function renderPersonality() {
+  const grid = document.getElementById('personality-grid');
+  grid.innerHTML = personalityData.map(p => {
+    const sel = selectedPersonality.has(p.id);
+    const cls = p.ptype === 'passive' ? 'type-passive' : 'type-trigger';
+    const lbl = p.ptype === 'passive' ? '패시브' : '트리거';
+    return `
+    <button class="personality-item ${sel ? 'selected' : ''}" onclick="togglePersonality('${p.id}')">
+      <div class="personality-name"><span class="personality-type ${cls}">${lbl}</span>${p.name}</div>
+      <div class="personality-desc">${p.description}</div>
+    </button>`;
+  }).join('');
+}
+
+function togglePersonality(id) {
+  if (selectedPersonality.has(id)) {
+    selectedPersonality.delete(id);
+  } else {
+    if (selectedPersonality.size >= 2) {
+      showAlert('create-alert', '개성은 최대 2개까지 선택할 수 있습니다.');
+      setTimeout(() => hideAlert('create-alert'), 2000); return;
+    }
+    selectedPersonality.add(id);
+  }
+  document.getElementById('personality-count-badge').textContent = `${selectedPersonality.size} / 2`;
+  renderPersonality();
+  updatePreview();
+}
+
+// ── 미리보기 ─────────────────────────────────────────────────────────────────
+function updatePreview() {
+  const name  = document.getElementById('char-name').value.trim() || '이름 미입력';
+  const stats = getStats();
+  const hp    = 10 * (stats.str + stats.agi);
+  const atk   = Math.max(stats.str, stats.wis);
+  const defR  = Math.round((stats.str / (stats.str + 50)) * 1000) / 10;
+  const evaR  = Math.round((stats.agi / (stats.agi + 50)) * 1000) / 10;
+  const masLabel = [selectedMastery, extraMastery].filter(Boolean).join(' + ') || '미선택';
+
+  document.getElementById('preview-name').textContent = name;
+  document.getElementById('preview-sub').textContent  = masLabel + ' · 메이커';
+  document.getElementById('preview-hp').textContent   = hp.toLocaleString();
+  document.getElementById('preview-atk').textContent  = atk;
+  document.getElementById('preview-def').textContent  = defR + '%';
+  document.getElementById('preview-eva').textContent  = evaR + '%';
+  document.getElementById('preview-skills').textContent = selectedSkills.size + '개';
+
+  const persList = [...selectedPersonality].map(id => personalityData.find(x => x.id === id)?.name || id);
+  document.getElementById('preview-personality').textContent = persList.join(', ') || '미선택';
+
+  STATS.forEach(s => {
+    const v   = stats[s];
+    const pct = Math.round(((v - MIN_STAT) / (MAX_STAT - MIN_STAT)) * 100);
+    document.getElementById(`bar-${s}`).style.width  = pct + '%';
+    document.getElementById(`pval-${s}`).textContent = v;
+  });
+}
+
+// ── 캐릭터 생성 ──────────────────────────────────────────────────────────────
+async function createCharacter() {
+  hideAlert('create-alert');
+  hideAlert('create-success');
+
+  const name  = document.getElementById('char-name').value.trim();
+  const stats = getStats();
+  const total = Object.values(stats).reduce((a,b) => a+b, 0);
+
+  if (!name)            return showAlert('create-alert', '캐릭터 이름을 입력해주세요.');
+  if (!selectedMastery) return showAlert('create-alert', '마스터리를 선택해주세요.');
+  if (total !== TOTAL)  return showAlert('create-alert', `스탯 합계가 ${TOTAL}이어야 합니다. (현재: ${total})`);
+  if (!selectedSkills.size) return showAlert('create-alert', '스킬을 1개 이상 선택해주세요.');
+
+  for (const id of selectedSkills) {
+    const s = skillData.find(x => x.id === id);
+    if (s && s.ap_cost >= AP_LOCK_THRESHOLD)
+      return showAlert('create-alert', `'${s.name}'은 강화 1단계 이후 편성 가능합니다.`);
+  }
+
+  const persList = [...selectedPersonality];
+  const body = {
+    user_id: parseInt(localStorage.getItem('user_id')),
+    name,
+    stats: { str_stat: stats.str, int_stat: stats.int, wis_stat: stats.wis, agi_stat: stats.agi },
+    mastery_type:      selectedMastery,
+    skill_ids:         [...selectedSkills],
+    personality_slot2: persList[0] || null,
+    personality_slot3: persList[1] || null,
+  };
+
+  const btn = document.getElementById('create-btn');
+  btn.classList.add('loading');
+  try {
+    const res  = await fetch(`${API}/character/maker`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) { showAlert('create-alert', data.detail || '생성에 실패했습니다.'); return; }
+    showSuccess('create-success', `'${data.name}' 생성 완료! 메인으로 이동합니다.`);
+    setTimeout(() => location.href = 'index.html', 1600);
+  } catch {
+    showAlert('create-alert', '서버에 연결할 수 없습니다.');
+  } finally {
+    btn.classList.remove('loading');
+  }
+}
+
+// ── 알림 헬퍼 ────────────────────────────────────────────────────────────────
+function showAlert(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.add('show');
+}
+function showSuccess(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.className = 'alert alert-success show';
+}
+function hideAlert(id) { document.getElementById(id)?.classList.remove('show'); }
+
+loadSkills();
+loadPersonality();
+updatePreview();
+</script>
+</body>
+</html>
