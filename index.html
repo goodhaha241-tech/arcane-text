@@ -441,6 +441,41 @@ body {
 }
 .mythic-icon { font-size: .85rem; }
 
+/* ── 마스터리 설정권 뱃지 ──────────────── */
+.ticket-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .82rem; font-weight: 700;
+  color: #1a7a6e;
+  background: #edfaf8;
+  border: 1px solid #9fd4ce;
+  padding: 4px 12px; border-radius: 14px;
+  letter-spacing: .02em;
+}
+.ticket-icon { font-size: .85rem; }
+
+/* ── 마스터리 조율 모달 ─────────────────── */
+.mastery-modal-overlay{position:fixed;inset:0;background:rgba(28,25,23,.5);display:flex;align-items:center;justify-content:center;z-index:170;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mastery-modal-overlay.show{opacity:1;pointer-events:all;}
+.mastery-modal-card{background:var(--surface);border-radius:14px;padding:28px 32px;box-shadow:var(--shadow2);width:360px;transform:scale(.9);transition:transform .25s;}
+.mastery-modal-overlay.show .mastery-modal-card{transform:scale(1);}
+.mastery-modal-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;margin-bottom:4px;}
+.mastery-modal-sub{font-size:.72rem;color:var(--text2);margin-bottom:18px;}
+.mastery-total-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border-radius:7px;padding:8px 12px;margin-bottom:16px;font-size:.8rem;}
+.mastery-total-bar strong{color:#1a7a6e;font-family:'Cinzel',serif;}
+.mastery-omni-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;margin-top:8px;border-top:1px dashed var(--border);font-size:.8rem;color:var(--text2);}
+.mastery-omni-row span{font-weight:700;color:var(--text);font-family:'Cinzel',serif;}
+.mastery-modal-btns{display:flex;gap:8px;margin-top:18px;}
+.mastery-modal-btn{flex:1;padding:9px;border:none;border-radius:7px;font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .18s;}
+.mastery-modal-btn.confirm{background:#1a7a6e;color:#fff;}
+.mastery-modal-btn.confirm:disabled{opacity:.4;cursor:not-allowed;}
+.mastery-modal-btn.cancel{background:var(--bg2);color:var(--text2);}
+
+/* 마스터리 수치 그리드 (강화 카드 내) */
+.mastery-grid-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.mastery-box{background:var(--bg2);border-radius:6px;padding:7px;text-align:center;}
+.mastery-box-lbl{font-size:.6rem;color:var(--text3);margin-bottom:2px;}
+.mastery-box-val{font-size:.85rem;font-weight:700;font-family:'Cinzel',serif;color:#1a7a6e;}
+
 /* ── 페이지 탭 ─────────────────────────── */
 .page-tab-bar {
   display: flex; gap: 6px; margin-bottom: 18px;
@@ -593,6 +628,10 @@ body {
 .skill-tag.debuff{background:#fff7e6;color:#b45309;}
 .skill-tag.unique{background:#f3eeff;color:#6c3fc1;}
 .skill-tag.power{background:var(--bg2);color:var(--text);}
+.skill-pool-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;}
+.skill-pool-tab{padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:.7rem;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;}
+.skill-pool-tab:hover{border-color:var(--blue);color:var(--blue);}
+.skill-pool-tab.active{background:var(--blue);border-color:var(--blue);color:#fff;}
 .skill-pool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .skill-pool-btn{padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;background:transparent;text-align:left;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
 .skill-pool-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-bg);}
@@ -648,6 +687,46 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .char-card { animation: fadeIn .3s ease both; }
+
+/* ── 대장간 ────────────────────────────── */
+.forge-section { margin-bottom: 24px; }
+.forge-region-title {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Cinzel', serif; font-size: .82rem; font-weight: 600;
+  letter-spacing: .05em; color: var(--text); margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.forge-region-badge {
+  font-size: .62rem; padding: 2px 8px; border-radius: 10px;
+  font-weight: 700; background: var(--bg2); color: var(--text3);
+  border: 1px solid var(--border);
+}
+.forge-mat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;
+}
+.forge-mat-card {
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 12px 12px 10px; background: var(--surface);
+  transition: all .15s; position: relative;
+}
+.forge-mat-card.owned { border-color: var(--border2); background: #fafaf8; }
+.forge-mat-card.rare  { border-color: #e8d9a8; background: var(--gold-bg); }
+.forge-mat-card.rare.owned { border-color: #c4a055; }
+.forge-mat-card.empty { opacity: .5; }
+.forge-mat-name { font-size: .8rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+.forge-mat-count {
+  font-size: .78rem; font-weight: 700; color: var(--green);
+}
+.forge-mat-count.zero { color: var(--text3); }
+.forge-mat-rarity {
+  position: absolute; top: 6px; right: 7px;
+  font-size: .55rem; font-weight: 700; padding: 1px 5px; border-radius: 3px;
+  color: var(--gold); background: var(--gold-bg); border: 1px solid #e8d9a8;
+}
+.forge-recipe-placeholder {
+  text-align: center; padding: 32px; color: var(--text3);
+  font-size: .82rem; border: 1.5px dashed var(--border); border-radius: var(--r);
+}
 </style>
 </head>
 <body>
@@ -665,6 +744,10 @@ body {
       <span class="mythic-icon">✦</span>
       <span id="mythic-amount">—</span>
     </div>
+    <div class="ticket-badge" id="ticket-badge">
+      <span class="ticket-icon">◈</span>
+      <span id="ticket-amount">—</span> 설정권
+    </div>
     <button class="nav-btn primary" onclick="location.href='maker.html'">+ 캐릭터 생성</button>
     <button class="nav-btn" onclick="handleLogout()">로그아웃</button>
   </div>
@@ -679,6 +762,7 @@ body {
       <button class="page-tab active" onclick="switchTab('chars', this)">캐릭터</button>
       <button class="page-tab"        onclick="switchTab('upgrade', this)">강화</button>
       <button class="page-tab"        onclick="switchTab('shop', this)">상점</button>
+      <button class="page-tab"        onclick="switchTab('forge', this)">대장간</button>
     </div>
 
     <!-- 캐릭터 목록 패널 -->
@@ -709,6 +793,14 @@ body {
         <div style="text-align:center;padding:32px;color:var(--text3);">로딩 중...</div>
       </div>
     </div>
+
+    <div class="page-panel" id="panel-forge">
+      <div id="forge-materials-section"></div>
+      <div class="forge-section">
+        <div class="forge-region-title">레시피 <span class="forge-region-badge">제작</span></div>
+        <div class="forge-recipe-placeholder">레시피가 준비 중입니다. 곧 업데이트 예정!</div>
+      </div>
+    </div><!-- /panel-forge -->
 
   </div>
 
@@ -785,6 +877,8 @@ async function loadGold() {
     document.getElementById('gold-amount').textContent = `${amount.toLocaleString()}G`;
     const mythic = data.mythic_light ?? 0;
     document.getElementById('mythic-amount').textContent = `${mythic.toLocaleString()}`;
+    const tickets = data.mastery_tickets ?? 0;
+    document.getElementById('ticket-amount').textContent = `${tickets}`;
   } catch(e) {
     console.error('[gold] 오류:', e);
   }
@@ -798,6 +892,7 @@ function switchTab(tab, btn) {
   document.getElementById(`panel-${tab}`).classList.add('active');
   if (tab === 'upgrade') renderUpgradePanel();
   if (tab === 'shop') renderShopPanel();
+  if (tab === 'forge') renderForgePanel();
 }
 
 // ── 강화 패널 렌더 ────────────────────────────────────────────────────────────
@@ -837,10 +932,27 @@ function renderUpgradePanel() {
         <div class="upgrade-stat-val">${val}</div>
       </div>`).join('');
 
+    const mst = c.mastery || {};
+    const omni = ((mst['아공']||0)+(mst['마도']||0)+(mst['무투']||0)+(mst['원소']||0))/4;
+    const masteryGrid = `
+      <div class="mastery-grid-row">
+        ${['아공','마도','무투','원소'].map(k=>`
+          <div class="mastery-box">
+            <div class="mastery-box-lbl">${k}</div>
+            <div class="mastery-box-val">${mst[k]||0}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:.65rem;color:var(--text3);margin-bottom:10px;text-align:right;">
+        전능 ${omni.toFixed(1)} · 합계 ${(mst['아공']||0)+(mst['마도']||0)+(mst['무투']||0)+(mst['원소']||0)}/50
+      </div>`;
+
     const actionArea = isMaxed
       ? `<div class="upgrade-action">
            <span style="font-size:.75rem;color:var(--green);font-weight:600;">✓ 최대 강화 완료</span>
-           <button class="upgrade-btn maxed" disabled>만렙</button>
+           <div style="display:flex;gap:6px;">
+             <button class="upgrade-btn" style="background:#1a7a6e;font-size:.72rem;" onclick="openMasteryTune(${c.id})">마스터리 조율</button>
+             <button class="upgrade-btn" style="background:var(--blue);font-size:.72rem;" onclick="openSkillSwap(${c.id})">스킬 변경</button>
+           </div>
          </div>`
       : `<div class="upgrade-action">
            <div class="upgrade-cost">
@@ -849,7 +961,8 @@ function renderUpgradePanel() {
              <span style="font-size:.68rem;color:var(--text3);margin-left:4px;">(스탯 상한 +${cap - UPGRADE_STAT_CAP[stage]})</span>
            </div>
            <div style="display:flex;gap:6px;">
-             <button class="upgrade-btn" style="background:var(--blue);font-size:.72rem;" onclick="openSkillSwap(${c.id})">스킬 교체</button>
+             <button class="upgrade-btn" style="background:#1a7a6e;font-size:.72rem;" onclick="openMasteryTune(${c.id})">마스터리 조율</button>
+             <button class="upgrade-btn" style="background:var(--blue);font-size:.72rem;" onclick="openSkillSwap(${c.id})">스킬 변경</button>
              <button class="upgrade-btn" onclick="doUpgrade(${c.id}, ${nextStage}, ${cost})">강화 ${nextStage}단계</button>
            </div>
          </div>`;
@@ -868,6 +981,7 @@ function renderUpgradePanel() {
         </div>
       </div>
       <div class="upgrade-stats">${statBoxes}</div>
+      ${masteryGrid}
       ${actionArea}
     </div>`;
   }).join('');
@@ -1164,6 +1278,7 @@ async function openSkillSwap(charId) {
   _swapCharId = charId;
   _swapOldSkillId = null;
   _swapNewSkillId = null;
+  _poolTab = '무속성';
 
   // 기본 스킬 풀 로드 (없으면)
   if (!Object.keys(_allSkillMeta).length) {
@@ -1224,26 +1339,54 @@ function selectSwapSlot(skillId) {
   renderSkillPool(char);
 }
 
+let _poolTab = '무속성';
+
 function renderSkillPool(char) {
-  const grid = document.getElementById('skill-pool-grid');
-  const equipped = char.skill_ids || [];
-  // 메이커 편성 가능 스킬(1~20), 미장착, 고유기 제외
-  const pool = Object.values(_allSkillMeta)
-    .filter(s => s.id >= 1 && s.id <= 20 && !equipped.includes(s.id) && !s.unique_owner)
-    .sort((a, b) => a.ap_cost - b.ap_cost || a.id - b.id);
+  const equipped     = char.skill_ids || [];
+  const charMasteries = char.mastery_types || [];
 
-  if (!pool.length) {
-    grid.innerHTML = '<div style="color:var(--text3);font-size:.75rem;grid-column:1/-1;text-align:center;padding:12px 0;">교체 가능한 스킬이 없습니다</div>';
-    return;
+  // 편성 가능 풀: MAKER_AVAILABLE(전능·고유기 제외), 미장착, 캐릭터 마스터리(+무속성) 일치
+  const pool = Object.values(_allSkillMeta).filter(s =>
+    s.id >= 1 && s.id <= 20
+    && !s.unique_owner
+    && s.skill_type !== '전능'
+    && !equipped.includes(s.id)
+    && (s.skill_type === '무속성' || !charMasteries.length || charMasteries.includes(s.skill_type))
+  ).sort((a, b) => a.ap_cost - b.ap_cost || a.id - b.id);
+
+  // 유효한 탭 목록 결정
+  const tabTypes = ['무속성', ...charMasteries];
+  if (!tabTypes.includes(_poolTab)) _poolTab = tabTypes[0];
+
+  const tabHTML = tabTypes.map(t => `
+    <button class="skill-pool-tab ${_poolTab === t ? 'active' : ''}" onclick="switchPoolTab('${t}')">${t}</button>
+  `).join('');
+
+  const tabPool = pool.filter(s => s.skill_type === _poolTab);
+
+  const gridHTML = tabPool.length
+    ? tabPool.map(s => `
+        <button class="skill-pool-btn" id="pool-${s.id}" onclick="selectNewSkill(${s.id})"
+                ${!_swapOldSkillId ? 'disabled' : ''}>
+          <div class="skill-slot-name">${s.name}</div>
+          <div class="skill-slot-meta">AP ${s.ap_cost}</div>
+          ${_skillTags(s)}
+        </button>`).join('')
+    : `<div style="color:var(--text3);font-size:.75rem;grid-column:1/-1;text-align:center;padding:12px 0;">교체 가능한 스킬이 없습니다</div>`;
+
+  const section = document.getElementById('skill-pool-section');
+  section.innerHTML = `
+    <div class="skill-pool-tabs" id="skill-pool-tabs">${tabHTML}</div>
+    <div class="skill-pool-grid" id="skill-pool-grid">${gridHTML}</div>`;
+}
+
+function switchPoolTab(type) {
+  _poolTab = type;
+  const char = characters.find(c => c.id === _swapCharId);
+  if (char) renderSkillPool(char);
+  if (_swapNewSkillId) {
+    document.getElementById(`pool-${_swapNewSkillId}`)?.classList.add('selected');
   }
-
-  grid.innerHTML = pool.map(s => `
-    <button class="skill-pool-btn" id="pool-${s.id}" onclick="selectNewSkill(${s.id})"
-            ${!_swapOldSkillId ? 'disabled' : ''}>
-      <div class="skill-slot-name">${s.name}</div>
-      <div class="skill-slot-meta">AP ${s.ap_cost}</div>
-      ${_skillTags(s)}
-    </button>`).join('');
 }
 
 function selectNewSkill(skillId) {
@@ -1272,6 +1415,96 @@ async function confirmSkillSwap() {
 
 function closeSkillSwap() {
   document.getElementById('skill-swap-overlay').classList.remove('show');
+}
+
+
+// ── 마스터리 조율 ──────────────────────────────────────────────────────────────
+const MASTERY_TYPES  = ['아공', '마도', '무투', '원소'];
+const MASTERY_IND_MAX   = 20;
+const MASTERY_TOTAL_MAX = 50;
+let _tuneCharId = null;
+
+function openMasteryTune(charId) {
+  const char = characters.find(c => c.id === charId);
+  if (!char) return;
+
+  const tickets = parseInt(document.getElementById('ticket-amount').textContent) || 0;
+  if (tickets < 1) { showToast('마스터리 설정권이 없습니다'); return; }
+
+  _tuneCharId = charId;
+  document.getElementById('mastery-modal-title').textContent = `${char.name} — 마스터리 조율`;
+
+  const mst = char.mastery || {};
+  const container = document.getElementById('mastery-sliders');
+  container.innerHTML = MASTERY_TYPES.map(k => `
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>${k}</span>
+        <span id="mval-${k}" style="color:#1a7a6e;">${mst[k] || 0}</span>
+      </div>
+      <input class="slider-input" type="range" id="mslider-${k}"
+             min="0" max="${MASTERY_IND_MAX}" value="${mst[k] || 0}"
+             oninput="onMasterySlider()">
+    </div>`).join('');
+
+  onMasterySlider();
+  document.getElementById('mastery-modal-overlay').classList.add('show');
+}
+
+function onMasterySlider() {
+  const vals = MASTERY_TYPES.map(k => +document.getElementById(`mslider-${k}`).value);
+  const total = vals.reduce((a, b) => a + b, 0);
+  const left  = MASTERY_TOTAL_MAX - total;
+
+  // 합계 초과 시 현재 슬라이더를 제한
+  if (left < 0) {
+    const excess = -left;
+    MASTERY_TYPES.forEach((k, i) => {
+      const el = document.getElementById(`mslider-${k}`);
+      el.value = Math.max(0, vals[i] - Math.ceil(excess * vals[i] / total));
+    });
+    onMasterySlider();
+    return;
+  }
+
+  MASTERY_TYPES.forEach(k => {
+    const v = +document.getElementById(`mslider-${k}`).value;
+    document.getElementById(`mval-${k}`).textContent = v;
+    // 남은 포인트 없으면 더 올릴 수 없도록 max 조정
+    document.getElementById(`mslider-${k}`).max = left === 0 ? v : MASTERY_IND_MAX;
+  });
+
+  const newTotal = MASTERY_TYPES.reduce((a, k) => a + +document.getElementById(`mslider-${k}`).value, 0);
+  document.getElementById('mastery-points-left').textContent = MASTERY_TOTAL_MAX - newTotal;
+  const omni = newTotal / 4;
+  document.getElementById('mastery-omni-val').textContent = omni.toFixed(1);
+  document.getElementById('mastery-confirm-btn').disabled = false;
+}
+
+async function confirmMasteryTune() {
+  if (!_tuneCharId) return;
+  const body = {};
+  MASTERY_TYPES.forEach(k => { body[k] = +document.getElementById(`mslider-${k}`).value; });
+
+  try {
+    const res = await fetch(`${API}/character/${_tuneCharId}/tune-mastery`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.detail || '조율 실패'); return; }
+    showToast('✓ 마스터리 조율 완료');
+    document.getElementById('ticket-amount').textContent = `${data.mastery_tickets}`;
+    await loadCharacters();
+    renderUpgradePanel();
+    closeMasteryTune();
+  } catch { showToast('서버 오류'); }
+}
+
+function closeMasteryTune() {
+  document.getElementById('mastery-modal-overlay').classList.remove('show');
+  _tuneCharId = null;
 }
 
 
@@ -1312,6 +1545,61 @@ function showShopResult(itemId,data){
 }
 function closeShopResult(){document.getElementById('shop-result-overlay').classList.remove('show');}
 
+// ── 대장간 ────────────────────────────────────────────────────────────────────
+const REGION_NAMES = { '1': '기원의 쌍성', '2': '시간의 신전' };
+
+async function renderForgePanel() {
+  const section = document.getElementById('forge-materials-section');
+  if (!section) return;
+  section.innerHTML = '<div style="color:var(--text3);font-size:.8rem;padding:8px 0;">재료 목록을 불러오는 중...</div>';
+  try {
+    const res  = await fetch(`${API}/forge/materials`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    if (!res.ok) { section.innerHTML = '<div style="color:var(--red);font-size:.8rem;">재료 목록을 불러오지 못했습니다.</div>'; return; }
+    const data = await res.json();
+    const mats = data.materials || [];
+
+    // 지역별 그룹핑
+    const byRegion = {};
+    mats.forEach(m => {
+      if (!byRegion[m.region_id]) byRegion[m.region_id] = [];
+      byRegion[m.region_id].push(m);
+    });
+
+    section.innerHTML = Object.entries(byRegion).map(([rid, list]) => {
+      // 보유 많은 것 우선, rare 우선
+      list.sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        if (a.rarity === 'rare' && b.rarity !== 'rare') return -1;
+        if (b.rarity === 'rare' && a.rarity !== 'rare') return 1;
+        return 0;
+      });
+      const cards = list.map(m => {
+        const isRare  = m.rarity === 'rare';
+        const isEmpty = m.count === 0;
+        const cls = [isRare ? 'rare' : '', m.count > 0 ? 'owned' : 'empty'].filter(Boolean).join(' ');
+        return `
+        <div class="forge-mat-card ${cls}" title="${m.description}">
+          ${isRare ? '<span class="forge-mat-rarity">RARE</span>' : ''}
+          <div class="forge-mat-name">${m.name}</div>
+          <div class="forge-mat-count ${isEmpty ? 'zero' : ''}">× ${m.count}</div>
+        </div>`;
+      }).join('');
+      const regionName = REGION_NAMES[rid] || `지역 ${rid}`;
+      return `
+      <div class="forge-section">
+        <div class="forge-region-title">
+          ${regionName} <span class="forge-region-badge">지역 ${rid}</span>
+        </div>
+        <div class="forge-mat-grid">${cards}</div>
+      </div>`;
+    }).join('');
+  } catch {
+    section.innerHTML = '<div style="color:var(--red);font-size:.8rem;">서버 오류</div>';
+  }
+}
+
 </script>
 <!-- 강화 슬라이더 모달 -->
 <div class="upgrade-modal-overlay" id="upgrade-modal-overlay">
@@ -1344,6 +1632,26 @@ function closeShopResult(){document.getElementById('shop-result-overlay').classL
     <button class="shop-result-close" onclick="closeEnhanceSelect()" style="background:var(--text3);margin-top:8px;">취소</button>
   </div>
 </div>
+<!-- 마스터리 조율 모달 -->
+<div class="mastery-modal-overlay" id="mastery-modal-overlay">
+  <div class="mastery-modal-card">
+    <div class="mastery-modal-title" id="mastery-modal-title">마스터리 조율</div>
+    <div class="mastery-modal-sub">설정권 1개를 소비해 마스터리 수치를 자유 배분합니다.</div>
+    <div class="mastery-total-bar">
+      남은 포인트 <strong id="mastery-points-left">50</strong> / 50
+    </div>
+    <div id="mastery-sliders">
+      <!-- 슬라이더 4개 동적 생성 -->
+    </div>
+    <div class="mastery-omni-row">
+      전능 마스터리 (4종 평균) <span id="mastery-omni-val">0.0</span>
+    </div>
+    <div class="mastery-modal-btns">
+      <button class="mastery-modal-btn cancel" onclick="closeMasteryTune()">취소</button>
+      <button class="mastery-modal-btn confirm" id="mastery-confirm-btn" onclick="confirmMasteryTune()">조율 확인</button>
+    </div>
+  </div>
+</div>
 <!-- 스킬 변경 창 -->
 <div class="skill-swap-overlay" id="skill-swap-overlay">
   <div class="skill-swap-card">
@@ -1355,7 +1663,7 @@ function closeShopResult(){document.getElementById('shop-result-overlay').classL
     </div>
     <div class="skill-swap-section">
       <div class="skill-swap-label">교체 스킬 선택</div>
-      <div class="skill-pool-grid" id="skill-pool-grid"></div>
+      <div id="skill-pool-section"></div>
     </div>
     <div class="skill-swap-btns">
       <button class="skill-swap-btn cancel" onclick="closeSkillSwap()">닫기</button>

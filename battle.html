@@ -1496,12 +1496,23 @@ function showResult(rewardData = null) {
 
   const rewardBox = document.getElementById('reward-box');
   if (playerAlive && rewardData) {
+    const MAT_NAMES = {
+      apple:'사과', rusty_iron:'녹슨 철', feather_leaf:'깃털나무 잎사귀',
+      choco_snack:'초코과자', plain_wood_plank:'평범한 나무판자',
+      deco_key:'장식용 열쇠', rainbow_fruit:'무지개 열매', love_tree_branch:'사랑나무 가지',
+      empty_album:'빈 앨범', scroll_paper:'두루마리 종이', light_orb:'빛구슬',
+      worn_hourglass:'낡은 모래시계', minor_mana_stone:'하급 마력석',
+      sand_of_time:'시간의 모래', transparent_glass:'투명한 유리',
+    };
     const mythicRow = rewardData.mythic_light
       ? `<div class="reward-row total" style="color:#6c3fc1"><span>✦ 신화의 빛</span><span>+${rewardData.mythic_light}</span></div>`
       : '';
+    const matRows = Object.entries(rewardData.materials || {})
+      .map(([id, cnt]) => `<div class="reward-row" style="color:var(--gold)"><span>⚒ ${MAT_NAMES[id]||id}</span><span>+${cnt}</span></div>`)
+      .join('');
     document.getElementById('reward-breakdown').innerHTML = `
       <div class="reward-row total"><span>획득 골드</span><span>+${rewardData.gold}G</span></div>
-      ${mythicRow}`;
+      ${mythicRow}${matRows}`;
     rewardBox.style.display = 'block';
   } else {
     rewardBox.style.display = 'none';
