@@ -1232,9 +1232,10 @@ function updatePartyInfo() {
 
 // ── 전투 시작 ───────────────────────────────────────────────────────────────
 function startBattle() {
-  const ids = party.filter(Boolean).map(c => c.id);
-  if (ids.length === 0) return;
-  localStorage.setItem('party_ids', JSON.stringify(ids));
+  const chars = party.filter(Boolean);
+  if (chars.length === 0) return;
+  localStorage.setItem('party_ids',   JSON.stringify(chars.map(c => c.id)));
+  localStorage.setItem('party_chars', JSON.stringify(chars.map(c => ({ id: c.id, name: c.name }))));
   location.href = 'battle.html';
 }
 
@@ -1516,13 +1517,20 @@ async function renderShopPanel(){
     try{const res=await fetch(`${API}/character/shop/items`,{headers:{'ngrok-skip-browser-warning':'1'}});const data=await res.json();shopItems=data.items||[];}
     catch{grid.innerHTML='<div style="color:var(--red)">상점 로드 실패</div>';return;}
   }
-  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡'};
-  const IC={'skill_scroll':'shop-icon-scroll','recruit_ticket':'shop-icon-recruit','recruit_enhance':'shop-icon-enhance'};
-  grid.innerHTML=shopItems.map(item=>`<div class="shop-card"><div class="shop-card-hdr"><div class="shop-icon ${IC[item.id]||''}">${ICONS[item.id]||'🛒'}</div><div><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div></div></div><div class="shop-item-footer"><div class="shop-price">G ${item.price.toLocaleString()}G${item.refund_dup?`<span class="shop-refund">(중복 ${item.refund_dup}G 반환)</span>`:''}</div><button class="shop-buy-btn" onclick="buyItem('${item.id}')">구매</button></div></div>`).join('');
+  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈'};
+  const IC={'skill_scroll':'shop-icon-scroll','recruit_ticket':'shop-icon-recruit','recruit_enhance':'shop-icon-enhance','mastery_ticket':'shop-icon-mastery'};
+  grid.innerHTML=shopItems.map(item=>{
+    const mythicTag=item.mythic_cost?`<span style="color:#6c3fc1;font-weight:700;">✦ ${item.mythic_cost}</span> + `:'';
+    return `<div class="shop-card"><div class="shop-card-hdr"><div class="shop-icon ${IC[item.id]||''}">${ICONS[item.id]||'🛒'}</div><div><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div></div></div><div class="shop-item-footer"><div class="shop-price">${mythicTag}${item.price.toLocaleString()}G${item.refund_dup?`<span class="shop-refund">(중복 ${item.refund_dup}G 반환)</span>`:''}</div><button class="shop-buy-btn" onclick="buyItem('${item.id}')">구매</button></div></div>`;
+  }).join('');
 }
 async function buyItem(itemId){
   if(itemId==='recruit_enhance'){const r=characters.filter(c=>c.character_type==='recruited'&&(c.growth_stage||0)<2);if(!r.length){showToast('강화 가능한 영입 캐릭터 없음');return;}openEnhanceSelect(r);return;}
-  const urls={skill_scroll:`${API}/character/shop/buy/skill-scroll`,recruit_ticket:`${API}/character/shop/buy/recruit-ticket`};
+  const urls={
+    skill_scroll:`${API}/character/shop/buy/skill-scroll`,
+    recruit_ticket:`${API}/character/shop/buy/recruit-ticket`,
+    mastery_ticket:`${API}/character/shop/buy/mastery-ticket`,
+  };
   const url=urls[itemId];if(!url)return;
   try{const res=await fetch(url,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult(itemId,data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
 }
@@ -1536,11 +1544,12 @@ async function buyEnhance(charId){
 }
 function closeEnhanceSelect(){document.getElementById('enhance-select-overlay').classList.remove('show');}
 function showShopResult(itemId,data){
-  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡'};
+  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈'};
   document.getElementById('shop-result-icon').textContent=data.duplicate?'🔄':(ICONS[itemId]||'🎁');
   document.getElementById('shop-result-title').textContent=data.duplicate?'중복!':'획득!';
   document.getElementById('shop-result-msg').textContent=data.message||'';
-  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G`;
+  const mythicLine = data.mythic_light != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
+  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}`;
   document.getElementById('shop-result-overlay').classList.add('show');
 }
 function closeShopResult(){document.getElementById('shop-result-overlay').classList.remove('show');}

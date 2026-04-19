@@ -431,6 +431,29 @@ body {
 .stance-major { color: var(--blue); background: var(--blue-bg); border-color: #bfd7f5; }
 .stance-minor { color: var(--red);  background: var(--red-bg);  border-color: #fecaca; }
 
+/* ── 캐릭터별 스탠스 선택 ──────────────── */
+.char-stance-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.char-stance-row:last-child { border-bottom: none; }
+.char-stance-name { flex: 1; font-size: .85rem; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.char-stance-btns { display: flex; gap: 5px; flex-shrink: 0; }
+.char-stance-btn {
+  padding: 5px 11px; border: 1.5px solid var(--border); border-radius: 6px;
+  background: transparent; font-family: 'Noto Sans KR', sans-serif;
+  font-size: .72rem; font-weight: 600; cursor: pointer; transition: all .12s; color: var(--text3);
+}
+.char-stance-btn:hover { border-color: var(--border2); color: var(--text); }
+.char-stance-btn.sel-neutral { border-color: var(--text2); background: var(--bg2); color: var(--text); }
+.char-stance-btn.sel-major   { border-color: var(--blue);  background: var(--blue-bg); color: var(--blue); }
+.char-stance-btn.sel-minor   { border-color: var(--red);   background: var(--red-bg);  color: var(--red); }
+.stance-legend {
+  margin-top: 14px; padding: 10px 12px;
+  background: var(--bg2); border-radius: 7px;
+  font-size: .7rem; color: var(--text2); line-height: 1.8;
+}
+
 /* ── 로딩 ──────────────────────────────── */
 .battle-loading {
   position: fixed; inset: 0; background: var(--bg);
@@ -525,39 +548,13 @@ body {
     </div>
   </div>
 
-  <!-- Step 2: 스탠스 선택 -->
+  <!-- Step 2: 캐릭터별 스탠스 선택 -->
   <div class="setup-panel" id="setup-step2" style="display:none">
-    <div class="setup-panel-title">스탠스 선택</div>
-    <div class="stance-grid">
-      <!-- 일반 -->
-      <div class="stance-card selected-neutral" onclick="selectStance(null)" id="stance-neutral">
-        <div class="stance-icon">⚖</div>
-        <div class="stance-name">일반</div>
-        <div class="stance-tags">
-          <span class="stance-tag neut">기본 스탯</span>
-          <span class="stance-tag neut">AP 회복 ±0</span>
-        </div>
-      </div>
-      <!-- 메이저 -->
-      <div class="stance-card" onclick="selectStance('major')" id="stance-major">
-        <div class="stance-icon">🛡</div>
-        <div class="stance-name" style="color:var(--blue)">메이저</div>
-        <div class="stance-tags">
-          <span class="stance-tag pos">받는 피해 -10%</span>
-          <span class="stance-tag pos">AP 회복 +1</span>
-          <span class="stance-tag neg">주는 피해 -20%</span>
-        </div>
-      </div>
-      <!-- 마이너 -->
-      <div class="stance-card" onclick="selectStance('minor')" id="stance-minor">
-        <div class="stance-icon">⚔</div>
-        <div class="stance-name" style="color:var(--red)">마이너</div>
-        <div class="stance-tags">
-          <span class="stance-tag pos">주는 피해 +20%</span>
-          <span class="stance-tag neg">받는 피해 +10%</span>
-          <span class="stance-tag neg">AP 회복 -1</span>
-        </div>
-      </div>
+    <div class="setup-panel-title">캐릭터별 스탠스 선택</div>
+    <div id="char-stance-list"></div>
+    <div class="stance-legend">
+      <b style="color:var(--blue)">메이저</b> — 받는 피해 -10%, AP 회복 +1, 주는 피해 -20%<br>
+      <b style="color:var(--red)">마이너</b> — 주는 피해 +20%, 받는 피해 +10%, AP 회복 -1
     </div>
   </div>
 
@@ -676,21 +673,42 @@ let rangeTargetId  = null;
 let aoeFocusPicks  = [];
 
 // ── 전투 준비 상태 ───────────────────────────────────────────────────────────
-let setupStep      = 1;       // 1=스테이지 선택, 2=스탠스 선택
-let selectedStage  = null;    // 선택한 Stage 객체
-let selectedStance = null;    // null | "major" | "minor"
-let stageDataMap   = {};      // { stageId: stageObject } — onclick에서 한글 직접 전달 금지용
+let setupStep     = 1;     // 1=스테이지 선택, 2=스탠스 선택
+let selectedStage = null;  // 선택한 Stage 객체
+let partyStances  = {};    // { charId: null|"major"|"minor" }
+let stageDataMap  = {};    // { stageId: stageObject } — onclick에서 한글 직접 전달 금지용
 
 // ── 초기화 ───────────────────────────────────────────────────────────────────
 async function init() {
   const partyIds = JSON.parse(localStorage.getItem('party_ids') || '[]');
   if (!partyIds.length) { location.href = 'index.html'; return; }
 
-  // 스킬 메타 로드
+  // 기본 스킬 메타 로드 (1-20)
   try {
     const res  = await fetch(`${API}/character/meta/maker-skills`, { headers: { 'ngrok-skip-browser-warning': '1' } });
     const data = await res.json();
     (data.skills || []).forEach(s => { skillMeta[s.id] = s; });
+  } catch {}
+
+  // 파티 캐릭터의 고유기 포함 모든 스킬 추가 로드
+  try {
+    const res  = await fetch(`${API}/character/me`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    const data = await res.json();
+    const extraIds = (data.characters || [])
+      .filter(c => partyIds.includes(c.id))
+      .flatMap(c => c.skill_ids || [])
+      .filter(id => !skillMeta[id]);
+    const uniqueIds = [...new Set(extraIds)];
+    if (uniqueIds.length) {
+      const r2 = await fetch(
+        `${API}/character/meta/skills-by-ids?ids=${uniqueIds.join(',')}`,
+        { headers: { 'ngrok-skip-browser-warning': '1' } },
+      );
+      const d2 = await r2.json();
+      (d2.skills || []).forEach(s => { skillMeta[s.id] = s; });
+    }
   } catch {}
 
   // 스테이지 목록 로드 후 준비 화면 표시
@@ -740,32 +758,42 @@ function selectStage(id) {
   document.getElementById('btn-setup-next').disabled = false;
 }
 
-// ── 스탠스 선택 ──────────────────────────────────────────────────────────────
-function selectStance(stance) {
-  selectedStance = stance;
-  document.querySelectorAll('.stance-card').forEach(c => {
-    c.classList.remove('selected-neutral', 'selected-major', 'selected-minor');
-  });
-  if (stance === null)    document.getElementById('stance-neutral').classList.add('selected-neutral');
-  if (stance === 'major') document.getElementById('stance-major').classList.add('selected-major');
-  if (stance === 'minor') document.getElementById('stance-minor').classList.add('selected-minor');
+// ── 캐릭터별 스탠스 선택 ─────────────────────────────────────────────────────
+function renderStanceStep() {
+  const chars = JSON.parse(localStorage.getItem('party_chars') || '[]');
+  chars.forEach(c => { if (!(c.id in partyStances)) partyStances[c.id] = null; });
+  document.getElementById('char-stance-list').innerHTML = chars.map(c => {
+    const cur = partyStances[c.id];
+    return `
+    <div class="char-stance-row">
+      <span class="char-stance-name">${c.name}</span>
+      <div class="char-stance-btns">
+        <button class="char-stance-btn ${cur === null  ? 'sel-neutral' : ''}" onclick="setStance(${c.id}, null)">통상</button>
+        <button class="char-stance-btn ${cur === 'major' ? 'sel-major' : ''}" onclick="setStance(${c.id}, 'major')">메이저</button>
+        <button class="char-stance-btn ${cur === 'minor' ? 'sel-minor' : ''}" onclick="setStance(${c.id}, 'minor')">마이너</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setStance(charId, stance) {
+  partyStances[charId] = stance;
+  renderStanceStep();
 }
 
 // ── 준비 화면 스텝 전환 ───────────────────────────────────────────────────────
 function setupNext() {
   if (setupStep === 1) {
-    // Step 1 → 2
     setupStep = 2;
     document.getElementById('setup-step1').style.display = 'none';
     document.getElementById('setup-step2').style.display = '';
     document.getElementById('btn-setup-back').style.display = '';
     document.getElementById('btn-setup-next').textContent = '전투 시작';
     document.getElementById('btn-setup-next').disabled = false;
-    // 스텝 표시 갱신
     document.getElementById('step1-indicator').className = 'setup-step done';
     document.getElementById('step2-indicator').className = 'setup-step active';
+    renderStanceStep();
   } else {
-    // 전투 시작
     startBattle();
   }
 }
@@ -773,6 +801,7 @@ function setupNext() {
 function setupBack() {
   if (setupStep === 2) {
     setupStep = 1;
+    partyStances = {};
     document.getElementById('setup-step2').style.display = 'none';
     document.getElementById('setup-step1').style.display = '';
     document.getElementById('btn-setup-back').style.display = 'none';
@@ -789,11 +818,14 @@ async function startBattle() {
   document.getElementById('loading').style.display = 'flex';
 
   try {
+    // null 스탠스는 제외 (통상 = 서버 기본값)
+    const stancesPayload = {};
+    Object.entries(partyStances).forEach(([id, s]) => { if (s) stancesPayload[parseInt(id)] = s; });
     const body = {
       mode: 'single',
       player_actor_ids: partyIds,
       stage_id: selectedStage ? selectedStage.id : null,
-      stance:   selectedStance,
+      stances:  stancesPayload,
     };
     const res  = await fetch(`${API}/battle/start`, {
       method:  'POST',
