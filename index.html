@@ -429,6 +429,18 @@ body {
 }
 .gold-icon { font-size: .85rem; }
 
+/* ── 신화의 빛 뱃지 ────────────────────── */
+.mythic-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .82rem; font-weight: 700;
+  color: #6c3fc1;
+  background: #f3eeff;
+  border: 1px solid #c4aaee;
+  padding: 4px 12px; border-radius: 14px;
+  letter-spacing: .02em;
+}
+.mythic-icon { font-size: .85rem; }
+
 /* ── 페이지 탭 ─────────────────────────── */
 .page-tab-bar {
   display: flex; gap: 6px; margin-bottom: 18px;
@@ -555,30 +567,43 @@ body {
 .upgrade-modal-btn.confirm{background:var(--accent);color:#fff;}
 .upgrade-modal-btn.confirm:disabled{opacity:.4;cursor:not-allowed;}
 .upgrade-modal-btn.cancel{background:var(--bg2);color:var(--text2);}
-/* ── 스킬 교체 모달 ─────────────────────── */
+/* ── 스킬 변경 모달 ─────────────────────── */
 .skill-swap-overlay{position:fixed;inset:0;background:rgba(28,25,23,.5);display:flex;align-items:center;justify-content:center;z-index:160;opacity:0;pointer-events:none;transition:opacity .25s;}
 .skill-swap-overlay.show{opacity:1;pointer-events:all;}
-.skill-swap-card{background:var(--surface);border-radius:14px;padding:24px 28px;box-shadow:var(--shadow2);width:380px;max-height:80vh;overflow-y:auto;transform:scale(.9);transition:transform .25s;}
+.skill-swap-card{background:var(--surface);border-radius:14px;padding:24px 28px;box-shadow:var(--shadow2);width:440px;max-height:85vh;overflow-y:auto;transform:scale(.9);transition:transform .25s;}
 .skill-swap-overlay.show .skill-swap-card{transform:scale(1);}
 .skill-swap-title{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;margin-bottom:4px;}
 .skill-swap-sub{font-size:.72rem;color:var(--text2);margin-bottom:14px;}
-.skill-swap-section{margin-bottom:14px;}
-.skill-swap-label{font-size:.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.skill-swap-section{margin-bottom:16px;}
+.skill-swap-label{font-size:.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
 .skill-slot-row{display:flex;flex-direction:column;gap:6px;}
-.skill-slot-btn{padding:8px 12px;border:1.5px solid var(--border);border-radius:7px;background:transparent;text-align:left;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
-.skill-slot-btn:hover{border-color:var(--accent);background:#fdf8f6;}
+.skill-slot-btn{padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;background:transparent;text-align:left;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.skill-slot-btn:hover:not(.locked){border-color:var(--accent);background:#fdf8f6;}
 .skill-slot-btn.selected{border-color:var(--accent);background:#fdf8f6;box-shadow:0 0 0 2px rgba(181,69,27,.15);}
+.skill-slot-btn.locked{cursor:default;opacity:.75;border-style:dashed;}
+.skill-slot-left{flex:1;min-width:0;}
 .skill-slot-name{font-size:.8rem;font-weight:600;}
-.skill-slot-meta{font-size:.65rem;color:var(--text3);margin-top:1px;}
+.skill-slot-meta{font-size:.64rem;color:var(--text3);margin-top:2px;}
+.skill-slot-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.skill-tag{font-size:.6rem;font-weight:600;padding:1px 6px;border-radius:10px;white-space:nowrap;}
+.skill-tag.type{background:var(--bg2);color:var(--text2);}
+.skill-tag.attack{background:#fdecea;color:#c0392b;}
+.skill-tag.heal{background:var(--green-bg);color:var(--green);}
+.skill-tag.buff{background:var(--blue-bg);color:var(--blue);}
+.skill-tag.debuff{background:#fff7e6;color:#b45309;}
+.skill-tag.unique{background:#f3eeff;color:#6c3fc1;}
+.skill-tag.power{background:var(--bg2);color:var(--text);}
 .skill-pool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.skill-pool-btn{padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;background:transparent;text-align:left;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.skill-pool-btn{padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;background:transparent;text-align:left;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
 .skill-pool-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-bg);}
+.skill-pool-btn.selected{border-color:var(--blue);background:var(--blue-bg);box-shadow:0 0 0 2px rgba(37,99,168,.15);}
 .skill-pool-btn:disabled{opacity:.35;cursor:not-allowed;}
-.skill-swap-btns{display:flex;gap:8px;margin-top:14px;}
+.skill-swap-btns{display:flex;gap:8px;margin-top:16px;}
 .skill-swap-btn{flex:1;padding:9px;border:none;border-radius:7px;font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
 .skill-swap-btn.confirm{background:var(--accent);color:#fff;}
 .skill-swap-btn.confirm:disabled{opacity:.4;cursor:not-allowed;}
 .skill-swap-btn.cancel{background:var(--bg2);color:var(--text2);}
+.skill-swap-hint{font-size:.68rem;color:var(--text3);margin-top:8px;text-align:center;}
 /* ── 토스트 ────────────────────────────── */
 .toast {
   position: fixed;
@@ -635,6 +660,10 @@ body {
     <div class="gold-badge" id="gold-badge">
       <span class="gold-icon">G</span>
       <span id="gold-amount">—</span>
+    </div>
+    <div class="mythic-badge" id="mythic-badge">
+      <span class="mythic-icon">✦</span>
+      <span id="mythic-amount">—</span>
     </div>
     <button class="nav-btn primary" onclick="location.href='maker.html'">+ 캐릭터 생성</button>
     <button class="nav-btn" onclick="handleLogout()">로그아웃</button>
@@ -754,6 +783,8 @@ async function loadGold() {
     console.log('[gold] 응답:', data);
     const amount = data.gold ?? 0;
     document.getElementById('gold-amount').textContent = `${amount.toLocaleString()}G`;
+    const mythic = data.mythic_light ?? 0;
+    document.getElementById('mythic-amount').textContent = `${mythic.toLocaleString()}`;
   } catch(e) {
     console.error('[gold] 오류:', e);
   }
@@ -1109,16 +1140,32 @@ async function handleLogout() {
 loadCharacters();
 loadGold();
 
-// ── 스킬 교체 ─────────────────────────────────────────────────────────────
+// ── 스킬 변경 창 ──────────────────────────────────────────────────────────
 let _swapCharId = null, _swapOldSkillId = null, _swapNewSkillId = null;
 let _allSkillMeta = {};  // {id: skillData}
+
+const _TARGET_KO  = { melee:'근거리', ranged:'원거리', support:'지원', heal:'치유', defend:'방어', evade:'회피' };
+const _ACTION_CLS = { attack:'attack', heal:'heal', buff:'buff', debuff:'debuff' };
+const _ACTION_KO  = { attack:'공격', heal:'치유', buff:'버프', debuff:'디버프' };
+
+function _skillTags(s) {
+  if (!s) return '';
+  const tags = [];
+  if (s.action_type) tags.push(`<span class="skill-tag ${_ACTION_CLS[s.action_type] || 'type'}">${_ACTION_KO[s.action_type] || s.action_type}</span>`);
+  if (s.skill_type)  tags.push(`<span class="skill-tag type">${s.skill_type}</span>`);
+  if (s.target)      tags.push(`<span class="skill-tag type">${_TARGET_KO[s.target] || s.target}</span>`);
+  if (s.power > 0)   tags.push(`<span class="skill-tag power">위력 ${s.power}</span>`);
+  if (s.inflicts)    tags.push(`<span class="skill-tag debuff">${s.inflicts}</span>`);
+  if (s.unique_owner) tags.push(`<span class="skill-tag unique">고유기</span>`);
+  return `<div class="skill-slot-tags">${tags.join('')}</div>`;
+}
 
 async function openSkillSwap(charId) {
   _swapCharId = charId;
   _swapOldSkillId = null;
   _swapNewSkillId = null;
 
-  // 스킬 메타 로드 (없으면)
+  // 기본 스킬 풀 로드 (없으면)
   if (!Object.keys(_allSkillMeta).length) {
     try {
       const res = await fetch(`${API}/character/meta/maker-skills`, {
@@ -1132,15 +1179,32 @@ async function openSkillSwap(charId) {
   const char = characters.find(c => c.id === charId);
   if (!char) return;
 
-  document.getElementById('skill-swap-title').textContent = `${char.name} — 스킬 편성`;
+  // 캐릭터 고유기 등 미로드 스킬 추가 로드
+  const missingIds = (char.skill_ids || []).filter(sid => !_allSkillMeta[sid]);
+  if (missingIds.length) {
+    try {
+      const res = await fetch(`${API}/character/meta/skills-by-ids?ids=${missingIds.join(',')}`, {
+        headers: { 'ngrok-skip-browser-warning': '1' }
+      });
+      const data = await res.json();
+      (data.skills || []).forEach(s => { _allSkillMeta[s.id] = s; });
+    } catch { showToast('고유기 정보 로드 실패'); return; }
+  }
+
+  document.getElementById('skill-swap-title').textContent = `${char.name} — 스킬 변경`;
 
   // 현재 장착 슬롯
   const slotRow = document.getElementById('skill-slot-row');
   slotRow.innerHTML = (char.skill_ids || []).map(sid => {
     const s = _allSkillMeta[sid];
-    return `<button class="skill-slot-btn" id="slot-${sid}" onclick="selectSwapSlot(${sid})">
-      <div class="skill-slot-name">${s ? s.name : `스킬 #${sid}`}</div>
-      <div class="skill-slot-meta">${s ? `AP ${s.ap_cost} · ${s.skill_type}` : ''}</div>
+    const locked = s?.unique_owner;
+    return `<button class="skill-slot-btn${locked ? ' locked' : ''}" id="slot-${sid}"
+        ${locked ? '' : `onclick="selectSwapSlot(${sid})"`}>
+      <div class="skill-slot-left">
+        <div class="skill-slot-name">${s ? s.name : `스킬 #${sid}`}</div>
+        <div class="skill-slot-meta">AP ${s ? s.ap_cost : '?'}</div>
+        ${_skillTags(s)}
+      </div>
     </button>`;
   }).join('');
 
@@ -1152,11 +1216,10 @@ async function openSkillSwap(charId) {
 function selectSwapSlot(skillId) {
   _swapOldSkillId = skillId;
   _swapNewSkillId = null;
-  document.querySelectorAll('.skill-slot-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.skill-slot-btn:not(.locked)').forEach(b => b.classList.remove('selected'));
   document.getElementById(`slot-${skillId}`)?.classList.add('selected');
   document.getElementById('skill-swap-confirm').disabled = true;
 
-  // 교체 가능 스킬 풀 갱신
   const char = characters.find(c => c.id === _swapCharId);
   renderSkillPool(char);
 }
@@ -1164,14 +1227,22 @@ function selectSwapSlot(skillId) {
 function renderSkillPool(char) {
   const grid = document.getElementById('skill-pool-grid');
   const equipped = char.skill_ids || [];
-  // 1~20 전체에서 미장착 스킬
-  const pool = Object.values(_allSkillMeta).filter(s => s.id >= 1 && s.id <= 20 && !equipped.includes(s.id));
+  // 메이커 편성 가능 스킬(1~20), 미장착, 고유기 제외
+  const pool = Object.values(_allSkillMeta)
+    .filter(s => s.id >= 1 && s.id <= 20 && !equipped.includes(s.id) && !s.unique_owner)
+    .sort((a, b) => a.ap_cost - b.ap_cost || a.id - b.id);
+
+  if (!pool.length) {
+    grid.innerHTML = '<div style="color:var(--text3);font-size:.75rem;grid-column:1/-1;text-align:center;padding:12px 0;">교체 가능한 스킬이 없습니다</div>';
+    return;
+  }
 
   grid.innerHTML = pool.map(s => `
     <button class="skill-pool-btn" id="pool-${s.id}" onclick="selectNewSkill(${s.id})"
             ${!_swapOldSkillId ? 'disabled' : ''}>
       <div class="skill-slot-name">${s.name}</div>
-      <div class="skill-slot-meta">AP ${s.ap_cost} · ${s.skill_type}</div>
+      <div class="skill-slot-meta">AP ${s.ap_cost}</div>
+      ${_skillTags(s)}
     </button>`).join('');
 }
 
@@ -1191,7 +1262,9 @@ async function confirmSkillSwap() {
     );
     const data = await res.json();
     if (!res.ok) { showToast(data.detail || '교체 실패'); return; }
-    showToast('✓ 스킬 교체 완료!');
+    const oldName = _allSkillMeta[_swapOldSkillId]?.name || `#${_swapOldSkillId}`;
+    const newName = _allSkillMeta[_swapNewSkillId]?.name || `#${_swapNewSkillId}`;
+    showToast(`✓ ${oldName} → ${newName} 교체 완료`);
     await loadCharacters();
     closeSkillSwap();
   } catch { showToast('서버 오류'); }
@@ -1271,13 +1344,13 @@ function closeShopResult(){document.getElementById('shop-result-overlay').classL
     <button class="shop-result-close" onclick="closeEnhanceSelect()" style="background:var(--text3);margin-top:8px;">취소</button>
   </div>
 </div>
-<!-- 스킬 교체 모달 -->
+<!-- 스킬 변경 창 -->
 <div class="skill-swap-overlay" id="skill-swap-overlay">
   <div class="skill-swap-card">
-    <div class="skill-swap-title" id="skill-swap-title">스킬 편성 변경</div>
-    <div class="skill-swap-sub">교체할 슬롯을 선택한 뒤, 새 스킬을 선택하세요.</div>
+    <div class="skill-swap-title" id="skill-swap-title">스킬 변경</div>
+    <div class="skill-swap-sub">교체할 슬롯을 선택한 뒤, 새 스킬을 선택하세요. 고유기(점선)는 변경 불가합니다.</div>
     <div class="skill-swap-section">
-      <div class="skill-swap-label">현재 장착 스킬</div>
+      <div class="skill-swap-label">장착 스킬</div>
       <div class="skill-slot-row" id="skill-slot-row"></div>
     </div>
     <div class="skill-swap-section">
@@ -1286,8 +1359,9 @@ function closeShopResult(){document.getElementById('shop-result-overlay').classL
     </div>
     <div class="skill-swap-btns">
       <button class="skill-swap-btn cancel" onclick="closeSkillSwap()">닫기</button>
-      <button class="skill-swap-btn confirm" id="skill-swap-confirm" onclick="confirmSkillSwap()" disabled>교체</button>
+      <button class="skill-swap-btn confirm" id="skill-swap-confirm" onclick="confirmSkillSwap()" disabled>변경 확인</button>
     </div>
+    <div class="skill-swap-hint" id="skill-swap-hint"></div>
   </div>
 </div>
 </body>

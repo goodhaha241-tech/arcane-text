@@ -323,6 +323,114 @@ body {
 }
 .result-btn:hover { background: var(--accent2); transform: translateY(-1px); }
 
+/* ── 전투 준비 화면 (스테이지 + 스탠스 선택) ─── */
+.battle-setup {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start; padding: 40px 20px;
+  overflow-y: auto; z-index: 300;
+}
+.setup-title {
+  font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700;
+  color: var(--text); margin-bottom: 6px; letter-spacing: .06em;
+}
+.setup-sub { font-size: .8rem; color: var(--text3); margin-bottom: 28px; }
+.setup-steps {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 28px;
+}
+.setup-step {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .75rem; font-weight: 600; color: var(--text3);
+}
+.setup-step.active { color: var(--accent); }
+.setup-step.done   { color: var(--green); }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg2); border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; font-weight: 700;
+}
+.setup-step.active .step-num { background: var(--accent); color: #fff; border-color: var(--accent); }
+.setup-step.done   .step-num { background: var(--green);  color: #fff; border-color: var(--green); }
+.step-sep { color: var(--border2); font-size: .7rem; }
+.setup-panel {
+  width: 100%; max-width: 560px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow);
+}
+.setup-panel-title {
+  font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 600;
+  letter-spacing: .05em; margin-bottom: 16px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.region-block { margin-bottom: 18px; }
+.region-name {
+  font-size: .75rem; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px;
+}
+.stage-list { display: flex; flex-direction: column; gap: 7px; }
+.stage-btn {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  background: transparent; font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; text-align: left; transition: all .15s;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.stage-btn:hover { border-color: var(--accent); background: #fdf8f6; }
+.stage-btn.selected { border-color: var(--accent); background: #fdf8f6;
+  box-shadow: 0 0 0 2px rgba(181,69,27,.15); }
+.stage-btn-info { flex: 1; }
+.stage-btn-name { font-size: .83rem; font-weight: 600; color: var(--text); }
+.stage-btn-desc { font-size: .68rem; color: var(--text3); margin-top: 2px; }
+.stage-btn-mult {
+  font-size: .7rem; font-weight: 700; color: var(--gold);
+  background: var(--gold-bg); border: 1px solid #e8d9a8;
+  padding: 2px 7px; border-radius: 5px; white-space: nowrap; margin-left: 10px;
+}
+.stance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.stance-card {
+  padding: 16px 12px; border: 2px solid var(--border); border-radius: 10px;
+  background: transparent; cursor: pointer; text-align: center;
+  font-family: 'Noto Sans KR', sans-serif; transition: all .15s;
+}
+.stance-card:hover { border-color: var(--border2); background: var(--bg2); }
+.stance-card.selected-neutral { border-color: var(--text2); background: var(--bg2); }
+.stance-card.selected-major   { border-color: var(--blue); background: var(--blue-bg); }
+.stance-card.selected-minor   { border-color: var(--red);  background: var(--red-bg); }
+.stance-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.stance-name { font-size: .82rem; font-weight: 700; margin-bottom: 8px; }
+.stance-tags { display: flex; flex-direction: column; gap: 3px; }
+.stance-tag {
+  font-size: .62rem; padding: 1px 6px; border-radius: 4px;
+  font-weight: 600; border: 1px solid currentColor; text-align: left;
+}
+.stance-tag.pos  { color: var(--green); background: var(--green-bg); border-color: #bbf7d0; }
+.stance-tag.neg  { color: var(--red);   background: var(--red-bg);   border-color: #fecaca; }
+.stance-tag.neut { color: var(--text3); background: var(--bg2);      border-color: var(--border); }
+.setup-actions {
+  display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
+  width: 100%; max-width: 560px;
+}
+.btn-setup-back {
+  padding: 10px 20px; border: 1.5px solid var(--border); border-radius: 7px;
+  background: transparent; font-family: 'Noto Sans KR', sans-serif;
+  font-size: .82rem; cursor: pointer; color: var(--text2); transition: all .15s;
+}
+.btn-setup-back:hover { border-color: var(--border2); }
+.btn-setup-next {
+  padding: 10px 24px; background: var(--accent); color: #fff;
+  border: none; border-radius: 7px; font-family: 'Noto Sans KR', sans-serif;
+  font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .15s;
+}
+.btn-setup-next:hover { background: var(--accent2); }
+.btn-setup-next:disabled { opacity: .4; cursor: not-allowed; }
+.stance-badge {
+  font-size: .6rem; padding: 1px 5px; border-radius: 3px;
+  font-weight: 700; border: 1px solid currentColor; display: inline-block;
+}
+.stance-major { color: var(--blue); background: var(--blue-bg); border-color: #bfd7f5; }
+.stance-minor { color: var(--red);  background: var(--red-bg);  border-color: #fecaca; }
+
 /* ── 로딩 ──────────────────────────────── */
 .battle-loading {
   position: fixed; inset: 0; background: var(--bg);
@@ -393,8 +501,75 @@ body {
 </head>
 <body>
 
+<!-- 전투 준비 화면 -->
+<div class="battle-setup" id="battle-setup">
+  <div class="setup-title">ARCANE TEXT</div>
+  <div class="setup-sub">전투 준비</div>
+
+  <!-- 스텝 표시 -->
+  <div class="setup-steps">
+    <div class="setup-step active" id="step1-indicator">
+      <div class="step-num">1</div><span>스테이지</span>
+    </div>
+    <div class="step-sep">›</div>
+    <div class="setup-step" id="step2-indicator">
+      <div class="step-num">2</div><span>스탠스</span>
+    </div>
+  </div>
+
+  <!-- Step 1: 스테이지 선택 -->
+  <div class="setup-panel" id="setup-step1">
+    <div class="setup-panel-title">스테이지 선택</div>
+    <div id="region-list">
+      <div style="color:var(--text3);font-size:.8rem;">스테이지 목록을 불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- Step 2: 스탠스 선택 -->
+  <div class="setup-panel" id="setup-step2" style="display:none">
+    <div class="setup-panel-title">스탠스 선택</div>
+    <div class="stance-grid">
+      <!-- 일반 -->
+      <div class="stance-card selected-neutral" onclick="selectStance(null)" id="stance-neutral">
+        <div class="stance-icon">⚖</div>
+        <div class="stance-name">일반</div>
+        <div class="stance-tags">
+          <span class="stance-tag neut">기본 스탯</span>
+          <span class="stance-tag neut">AP 회복 ±0</span>
+        </div>
+      </div>
+      <!-- 메이저 -->
+      <div class="stance-card" onclick="selectStance('major')" id="stance-major">
+        <div class="stance-icon">🛡</div>
+        <div class="stance-name" style="color:var(--blue)">메이저</div>
+        <div class="stance-tags">
+          <span class="stance-tag pos">받는 피해 -10%</span>
+          <span class="stance-tag pos">AP 회복 +1</span>
+          <span class="stance-tag neg">주는 피해 -20%</span>
+        </div>
+      </div>
+      <!-- 마이너 -->
+      <div class="stance-card" onclick="selectStance('minor')" id="stance-minor">
+        <div class="stance-icon">⚔</div>
+        <div class="stance-name" style="color:var(--red)">마이너</div>
+        <div class="stance-tags">
+          <span class="stance-tag pos">주는 피해 +20%</span>
+          <span class="stance-tag neg">받는 피해 +10%</span>
+          <span class="stance-tag neg">AP 회복 -1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div class="setup-actions">
+    <button class="btn-setup-back" id="btn-setup-back" onclick="setupBack()" style="display:none">뒤로</button>
+    <button class="btn-setup-next" id="btn-setup-next" onclick="setupNext()" disabled>다음</button>
+  </div>
+</div>
+
 <!-- 로딩 -->
-<div class="battle-loading" id="loading">
+<div class="battle-loading" id="loading" style="display:none">
   <div class="spinner"></div>
   <div class="loading-msg">전투를 준비하고 있습니다...</div>
 </div>
@@ -405,6 +580,7 @@ body {
   <div class="nav-center">
     <div class="turn-badge" id="turn-badge">턴 1</div>
     <div class="phase-badge phase-player" id="phase-badge">행동 선택</div>
+    <div class="turn-badge" id="stage-badge" style="font-size:.7rem;color:var(--text3);"></div>
   </div>
   <button class="nav-retreat" onclick="confirmRetreat()">철수</button>
 </nav>
@@ -486,7 +662,6 @@ let skillMeta   = {};     // { skillId: skillData }
 let actionLock  = false;
 
 // 파티 행동 큐 관리
-// 한 턴에 파티원 전원이 순서대로 행동 선택 → 마지막 액터 행동 후 적 턴 진행
 let partyQueue  = [];     // 이번 턴 행동 대기 중인 플레이어 actor id 목록
 let queueIdx    = 0;      // 현재 행동 선택 중인 큐 인덱스
 
@@ -494,34 +669,136 @@ let queueIdx    = 0;      // 현재 행동 선택 중인 큐 인덱스
 let stats = { turns: 0, totalDmg: 0, defeated: 0 };
 
 // 타겟 선택 상태
-let selectMode     = null;   // null | 'enemy' | 'ally' | 'aoe_focus'
-let pendingSkillId = null;   // 선택 대기 중인 스킬 ID
-let rangeFired     = false;  // 이번 턴 원거리 선행 사용 여부
-let rangeTargetId  = null;   // 원거리 피해를 준 대상 ID
-let aoeFocusPicks  = [];     // 범위:집중 선택한 대상 목록 (최대 2명)
+let selectMode     = null;
+let pendingSkillId = null;
+let rangeFired     = false;
+let rangeTargetId  = null;
+let aoeFocusPicks  = [];
+
+// ── 전투 준비 상태 ───────────────────────────────────────────────────────────
+let setupStep      = 1;       // 1=스테이지 선택, 2=스탠스 선택
+let selectedStage  = null;    // 선택한 Stage 객체
+let selectedStance = null;    // null | "major" | "minor"
+let stageDataMap   = {};      // { stageId: stageObject } — onclick에서 한글 직접 전달 금지용
 
 // ── 초기화 ───────────────────────────────────────────────────────────────────
 async function init() {
   const partyIds = JSON.parse(localStorage.getItem('party_ids') || '[]');
   if (!partyIds.length) { location.href = 'index.html'; return; }
 
-  // 스킬 메타 로드 (maker-skills + 고유기 포함 전체)
+  // 스킬 메타 로드
   try {
-    const res  = await fetch(`${API}/character/meta/maker-skills`, { headers: { 'ngrok-skip-browser-warning': '1', } });
+    const res  = await fetch(`${API}/character/meta/maker-skills`, { headers: { 'ngrok-skip-browser-warning': '1' } });
     const data = await res.json();
     (data.skills || []).forEach(s => { skillMeta[s.id] = s; });
   } catch {}
 
-  // 전투 시작
+  // 스테이지 목록 로드 후 준비 화면 표시
+  await loadStages();
+}
+
+// ── 스테이지 목록 로드 ────────────────────────────────────────────────────────
+async function loadStages() {
   try {
+    const res  = await fetch(`${API}/battle/stages`, { headers: { 'ngrok-skip-browser-warning': '1' } });
+    const data = await res.json();
+    renderStageList(data.regions || []);
+  } catch {
+    document.getElementById('region-list').innerHTML =
+      '<div style="color:var(--red);font-size:.8rem;">스테이지 목록을 불러오지 못했습니다.</div>';
+  }
+}
+
+function renderStageList(regions) {
+  // 스테이지 데이터를 JS 객체로 보관 (onclick에 한글 문자열 직접 삽입 금지)
+  stageDataMap = {};
+  regions.forEach(r => r.stages.forEach(s => { stageDataMap[s.id] = s; }));
+
+  document.getElementById('region-list').innerHTML = regions.map(r => `
+    <div class="region-block">
+      <div class="region-name">${r.name} — ${r.description}</div>
+      <div class="stage-list">
+        ${r.stages.map(s => `
+          <button class="stage-btn" id="sbtn-${s.id}" onclick="selectStage('${s.id}')">
+            <div class="stage-btn-info">
+              <div class="stage-btn-name">${s.id}. ${s.name}</div>
+              <div class="stage-btn-desc">${s.description}</div>
+            </div>
+            <span class="stage-btn-mult">×${s.reward_mult} 보상</span>
+          </button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function selectStage(id) {
+  const s = stageDataMap[id];
+  if (!s) return;
+  selectedStage = { id: s.id, name: s.name, desc: s.description, mult: s.reward_mult };
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('selected'));
+  const btn = document.getElementById(`sbtn-${id}`);
+  if (btn) btn.classList.add('selected');
+  document.getElementById('btn-setup-next').disabled = false;
+}
+
+// ── 스탠스 선택 ──────────────────────────────────────────────────────────────
+function selectStance(stance) {
+  selectedStance = stance;
+  document.querySelectorAll('.stance-card').forEach(c => {
+    c.classList.remove('selected-neutral', 'selected-major', 'selected-minor');
+  });
+  if (stance === null)    document.getElementById('stance-neutral').classList.add('selected-neutral');
+  if (stance === 'major') document.getElementById('stance-major').classList.add('selected-major');
+  if (stance === 'minor') document.getElementById('stance-minor').classList.add('selected-minor');
+}
+
+// ── 준비 화면 스텝 전환 ───────────────────────────────────────────────────────
+function setupNext() {
+  if (setupStep === 1) {
+    // Step 1 → 2
+    setupStep = 2;
+    document.getElementById('setup-step1').style.display = 'none';
+    document.getElementById('setup-step2').style.display = '';
+    document.getElementById('btn-setup-back').style.display = '';
+    document.getElementById('btn-setup-next').textContent = '전투 시작';
+    document.getElementById('btn-setup-next').disabled = false;
+    // 스텝 표시 갱신
+    document.getElementById('step1-indicator').className = 'setup-step done';
+    document.getElementById('step2-indicator').className = 'setup-step active';
+  } else {
+    // 전투 시작
+    startBattle();
+  }
+}
+
+function setupBack() {
+  if (setupStep === 2) {
+    setupStep = 1;
+    document.getElementById('setup-step2').style.display = 'none';
+    document.getElementById('setup-step1').style.display = '';
+    document.getElementById('btn-setup-back').style.display = 'none';
+    document.getElementById('btn-setup-next').textContent = '다음';
+    document.getElementById('step1-indicator').className = 'setup-step active';
+    document.getElementById('step2-indicator').className = 'setup-step';
+  }
+}
+
+// ── 전투 시작 ────────────────────────────────────────────────────────────────
+async function startBattle() {
+  const partyIds = JSON.parse(localStorage.getItem('party_ids') || '[]');
+  document.getElementById('battle-setup').style.display = 'none';
+  document.getElementById('loading').style.display = 'flex';
+
+  try {
+    const body = {
+      mode: 'single',
+      player_actor_ids: partyIds,
+      stage_id: selectedStage ? selectedStage.id : null,
+      stance:   selectedStance,
+    };
     const res  = await fetch(`${API}/battle/start`, {
       method:  'POST',
       headers: { 'ngrok-skip-browser-warning': '1', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({
-        mode: 'single',
-        player_actor_ids: partyIds,
-        enemy_preset: 'goblin',
-      }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     if (!res.ok) { alert(data.detail || '전투 시작 실패'); location.href = 'index.html'; return; }
@@ -557,6 +834,12 @@ function applyState(state) {
     document.getElementById('announced-text').textContent = `적 예고: ${state.announced}`;
   } else {
     bar.classList.remove('show');
+  }
+
+  // 스테이지 표시
+  if (state.stage_id && selectedStage) {
+    const stageLbl = document.getElementById('stage-badge');
+    if (stageLbl) stageLbl.textContent = `${state.stage_id} ${selectedStage.name}`;
   }
 
   renderEnemies();
@@ -879,12 +1162,17 @@ function renderPartyList() {
     const tagLbl = isAct ? '행동 중' : isDone ? '완료' : dead ? '전투불능' : '대기';
     const statuses = (p.status_effects || []).map(s => s.type).join(', ');
 
+    const stanceBadge = p.stance === 'major'
+      ? '<span class="stance-badge stance-major">메이저</span>'
+      : p.stance === 'minor'
+      ? '<span class="stance-badge stance-minor">마이너</span>'
+      : '';
     return `
     <div class="party-member ${isAct?'active-turn':''} ${isDone?'done':''} ${dead?'dead':''}"
          id="ally-card-${p.id}"
          onclick="onAllyClick(${p.id}, ${dead})">
       <div class="member-name-row">
-        <span class="member-name">${p.name}</span>
+        <span class="member-name">${p.name} ${stanceBadge}</span>
         <span class="member-turn-tag ${tagCls}">${tagLbl}</span>
       </div>
       <div class="member-hp-bar">
@@ -1208,8 +1496,12 @@ function showResult(rewardData = null) {
 
   const rewardBox = document.getElementById('reward-box');
   if (playerAlive && rewardData) {
+    const mythicRow = rewardData.mythic_light
+      ? `<div class="reward-row total" style="color:#6c3fc1"><span>✦ 신화의 빛</span><span>+${rewardData.mythic_light}</span></div>`
+      : '';
     document.getElementById('reward-breakdown').innerHTML = `
-      <div class="reward-row total"><span>획득 골드</span><span>+${rewardData.gold}G</span></div>`;
+      <div class="reward-row total"><span>획득 골드</span><span>+${rewardData.gold}G</span></div>
+      ${mythicRow}`;
     rewardBox.style.display = 'block';
   } else {
     rewardBox.style.display = 'none';
