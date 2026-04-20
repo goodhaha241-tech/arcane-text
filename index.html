@@ -1951,8 +1951,6 @@ function openEquipModal(idx) {
   const displayName = toolDisplayName(inst);
   document.getElementById('equip-modal-title').textContent = `${displayName} — 장착할 캐릭터 선택`;
 
-  const inst = normTool((userResources.owned_tools || [])[idx] || {});
-  const meta = TOOL_BASE_INFO[inst.id] || { name: inst.id, slot: 'weapon' };
   const list = document.getElementById('equip-char-list');
   if (!characters.length) {
     list.innerHTML = '<div style="color:var(--text3);font-size:.82rem;">캐릭터가 없습니다.</div>';
