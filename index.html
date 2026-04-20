@@ -441,6 +441,18 @@ body {
 }
 .mythic-icon { font-size: .85rem; }
 
+/* ── 창조의 빛 뱃지 ────────────────────── */
+.creation-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .82rem; font-weight: 700;
+  color: #1a7a6e;
+  background: #edfaf8;
+  border: 1px solid #8fd6ce;
+  padding: 4px 12px; border-radius: 14px;
+  letter-spacing: .02em;
+}
+.creation-icon { font-size: .85rem; }
+
 /* ── 인벤토리 ──────────────────────────── */
 .inv-grid {
   display: grid;
@@ -853,6 +865,10 @@ body {
       <span class="mythic-icon">✦</span>
       <span id="mythic-amount">—</span>
     </div>
+    <div class="creation-badge" id="creation-badge">
+      <span class="creation-icon">✵</span>
+      <span id="creation-amount">—</span>
+    </div>
     <button class="nav-btn primary" onclick="location.href='maker.html'">+ 캐릭터 생성</button>
     <button class="nav-btn" onclick="handleLogout()">로그아웃</button>
   </div>
@@ -996,8 +1012,9 @@ async function loadGold() {
     userResources.tool_enhance_kits  = data.tool_enhance_kits  ?? 0;
     userResources.disassemble_kits   = data.disassemble_kits   ?? 0;
     userResources.creation_light     = data.creation_light     ?? 0;
-    document.getElementById('gold-amount').textContent   = `${userResources.gold.toLocaleString()}G`;
-    document.getElementById('mythic-amount').textContent = `${userResources.mythic_light.toLocaleString()}`;
+    document.getElementById('gold-amount').textContent    = `${userResources.gold.toLocaleString()}G`;
+    document.getElementById('mythic-amount').textContent  = `${userResources.mythic_light.toLocaleString()}`;
+    document.getElementById('creation-amount').textContent= `${userResources.creation_light.toLocaleString()}`;
   } catch(e) {
     console.error('[gold] 오류:', e);
   }
@@ -1678,8 +1695,9 @@ async function renderShopPanel(){
   const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈','disassemble_kit':'⚗'};
   const IC={'skill_scroll':'shop-icon-scroll','recruit_ticket':'shop-icon-recruit','recruit_enhance':'shop-icon-enhance','mastery_ticket':'shop-icon-mastery','disassemble_kit':'shop-icon-enhance'};
   grid.innerHTML=shopItems.map(item=>{
-    const mythicTag=item.mythic_cost?`<span style="color:#6c3fc1;font-weight:700;">✦ ${item.mythic_cost}</span> + `:'';
-    return `<div class="shop-card"><div class="shop-card-hdr"><div class="shop-icon ${IC[item.id]||''}">${ICONS[item.id]||'🛒'}</div><div><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div></div></div><div class="shop-item-footer"><div class="shop-price">${mythicTag}${item.price.toLocaleString()}G${item.refund_dup?`<span class="shop-refund">(중복 ${item.refund_dup}G 반환)</span>`:''}</div><button class="shop-buy-btn" onclick="buyItem('${item.id}')">구매</button></div></div>`;
+    const mythicTag    = item.mythic_cost    ? `<span style="color:#6c3fc1;font-weight:700;">✦ ${item.mythic_cost}</span> + ` : '';
+    const creationTag  = item.creation_cost  ? `<span style="color:#1a7a6e;font-weight:700;">✵ ${item.creation_cost}</span> + ` : '';
+    return `<div class="shop-card"><div class="shop-card-hdr"><div class="shop-icon ${IC[item.id]||''}">${ICONS[item.id]||'🛒'}</div><div><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div></div></div><div class="shop-item-footer"><div class="shop-price">${mythicTag}${creationTag}${item.price.toLocaleString()}G${item.refund_dup?`<span class="shop-refund">(중복 ${item.refund_dup}G 반환)</span>`:''}</div><button class="shop-buy-btn" onclick="buyItem('${item.id}')">구매</button></div></div>`;
   }).join('');
 }
 async function buyItem(itemId){
@@ -1698,10 +1716,11 @@ function showShopResult(itemId,data){
   document.getElementById('shop-result-icon').textContent=data.duplicate?'🔄':(ICONS[itemId]||'🎁');
   document.getElementById('shop-result-title').textContent=data.duplicate?'중복!':'획득!';
   document.getElementById('shop-result-msg').textContent=data.message||'';
-  const mythicLine   = data.mythic_light    != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
-  const enhanceLine  = data.enhance_tickets != null ? `  ⚔ 강화권: ${data.enhance_tickets}개` : '';
-  const disassLine   = data.disassemble_kits!= null ? `  ⚗ 분해 키트: ${data.disassemble_kits}개` : '';
-  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}${enhanceLine}${disassLine}`;
+  const mythicLine    = data.mythic_light    != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
+  const creationLine  = data.creation_light  != null ? `  ✵ 창조의 빛: ${data.creation_light}개` : '';
+  const enhanceLine   = data.enhance_tickets != null ? `  ⚔ 강화권: ${data.enhance_tickets}개` : '';
+  const disassLine    = data.disassemble_kits!= null ? `  ⚗ 분해 키트: ${data.disassemble_kits}개` : '';
+  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}${creationLine}${enhanceLine}${disassLine}`;
   document.getElementById('shop-result-overlay').classList.add('show');
 }
 function closeShopResult(){document.getElementById('shop-result-overlay').classList.remove('show');}
@@ -1744,7 +1763,7 @@ async function renderInventoryPanel() {
   if (!el) return;
 
   const CONSUMABLES = [
-    { key:'mastery_tickets',   icon:'◈', cls:'inv-icon-mastery', name:'마스터리 설정권',  desc:'마스터리 수치를 자유롭게 재배분합니다.\n강화 패널 → 마스터리 조율에서 사용.' },
+    { key:'mastery_tickets',   icon:'◈', cls:'inv-icon-mastery', name:'마스터리 설정권',  desc:'마스터리 수치를 자유롭게 재배분합니다.\n구매: 400G + 창조의 빛 3개\n강화 패널 → 마스터리 조율에서 사용.' },
     { key:'enhance_tickets',   icon:'⚔', cls:'inv-icon-enhance', name:'캐릭터 강화권',    desc:'캐릭터 강화에 필요합니다.\n강화 1단계: 3개 + 150G\n강화 2단계: 3개 + 300G' },
     { key:'tool_enhance_kits', icon:'✦', cls:'inv-icon-mastery', name:'도구 강화 키트',   desc:'도구를 강화합니다. 최대 +3단계.\n+3 달성 시 랜덤 수식어가 부여됩니다.' },
     { key:'disassemble_kits',  icon:'⚗', cls:'inv-icon-enhance', name:'도구 분해 키트',   desc:'도구를 분해해 창조의 빛을 획득합니다.\n강화 수치에 비례: 기본 1 + 강화×2' },
