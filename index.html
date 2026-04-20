@@ -441,17 +441,42 @@ body {
 }
 .mythic-icon { font-size: .85rem; }
 
-/* ── 마스터리 설정권 뱃지 ──────────────── */
-.ticket-badge {
-  display: flex; align-items: center; gap: 5px;
-  font-size: .82rem; font-weight: 700;
-  color: #1a7a6e;
-  background: #edfaf8;
-  border: 1px solid #9fd4ce;
-  padding: 4px 12px; border-radius: 14px;
-  letter-spacing: .02em;
+/* ── 인벤토리 ──────────────────────────── */
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
 }
-.ticket-icon { font-size: .85rem; }
+.inv-card {
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  padding: 16px 16px 14px; background: var(--surface);
+  display: flex; flex-direction: column; gap: 6px;
+  transition: border-color .15s;
+}
+.inv-card:hover { border-color: var(--border2); }
+.inv-card-hdr {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 2px;
+}
+.inv-card-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.inv-icon-mastery { background: #edfaf8; color: #1a7a6e; border: 1px solid #9fd4ce; }
+.inv-icon-enhance { background: #fdf6f3; color: #b5451b; border: 1px solid #e8bfb0; }
+.inv-card-name { font-size: .82rem; font-weight: 600; color: var(--text); }
+.inv-card-count {
+  font-size: 1.5rem; font-weight: 700; color: var(--text);
+  font-family: 'Cinzel', serif; letter-spacing: .03em;
+}
+.inv-card-count span { font-size: .75rem; font-weight: 400; color: var(--text3); margin-left: 2px; }
+.inv-card-desc { font-size: .7rem; color: var(--text3); line-height: 1.55; }
+.inv-section-title {
+  font-family: 'Cinzel', serif; font-size: .82rem; font-weight: 600;
+  letter-spacing: .05em; color: var(--text); margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
 
 /* ── 마스터리 조율 모달 ─────────────────── */
 .mastery-modal-overlay{position:fixed;inset:0;background:rgba(28,25,23,.5);display:flex;align-items:center;justify-content:center;z-index:170;opacity:0;pointer-events:none;transition:opacity .25s;}
@@ -727,6 +752,90 @@ body {
   text-align: center; padding: 32px; color: var(--text3);
   font-size: .82rem; border: 1.5px dashed var(--border); border-radius: var(--r);
 }
+
+/* ── 레시피 카드 ────────────────────────────── */
+.forge-recipe-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;
+}
+.forge-recipe-card {
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  padding: 14px; background: var(--surface); transition: all .15s;
+}
+.forge-recipe-card.craftable { border-color: var(--green); }
+.forge-recipe-name { font-size: .85rem; font-weight: 700; margin-bottom: 4px; }
+.forge-recipe-slot {
+  font-size: .7rem; padding: 2px 8px; border-radius: 10px; display: inline-block;
+  margin-bottom: 8px; font-weight: 600;
+  background: var(--bg2); color: var(--text2);
+}
+.forge-recipe-slot.weapon    { background: #fff0eb; color: var(--accent); }
+.forge-recipe-slot.armor     { background: var(--blue-bg); color: var(--blue); }
+.forge-recipe-slot.accessory { background: var(--gold-bg); color: var(--gold); }
+.forge-recipe-bonus { font-size: .75rem; color: var(--green); font-weight: 600; margin-bottom: 8px; }
+.forge-recipe-ingredients { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.forge-recipe-ing {
+  font-size: .68rem; padding: 2px 7px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg2); color: var(--text2);
+}
+.forge-recipe-ing.ok  { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+.forge-recipe-ing.bad { border-color: var(--accent); color: var(--accent); background: #fff5f2; }
+.forge-craft-btn {
+  width: 100%; padding: 7px; border-radius: 6px; font-size: .78rem; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--bg2); color: var(--text3);
+  cursor: not-allowed;
+}
+.forge-craft-btn.active {
+  background: var(--green); color: #fff; border-color: var(--green); cursor: pointer;
+}
+.forge-craft-btn.active:hover { background: #2e6643; }
+
+/* ── 인벤토리 도구 카드 ─────────────────────── */
+.inv-tools-title {
+  font-size: .78rem; font-weight: 700; color: var(--text2);
+  margin: 20px 0 10px; letter-spacing: .04em; text-transform: uppercase;
+}
+.inv-tool-card {
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  padding: 14px; background: var(--surface); display: flex; flex-direction: column; gap: 6px;
+}
+.inv-tool-name { font-size: .85rem; font-weight: 700; }
+.inv-tool-slot {
+  font-size: .7rem; padding: 2px 8px; border-radius: 10px; display: inline-block;
+  font-weight: 600; background: var(--bg2); color: var(--text2); align-self: flex-start;
+}
+.inv-tool-slot.weapon    { background: #fff0eb; color: var(--accent); }
+.inv-tool-slot.armor     { background: var(--blue-bg); color: var(--blue); }
+.inv-tool-slot.accessory { background: var(--gold-bg); color: var(--gold); }
+.inv-tool-bonus { font-size: .78rem; color: var(--green); font-weight: 600; }
+.inv-tool-equip-btn {
+  margin-top: 4px; padding: 6px; border-radius: 6px; font-size: .75rem; font-weight: 600;
+  border: 1.5px solid var(--green); background: var(--green); color: #fff; cursor: pointer;
+}
+.inv-tool-equip-btn:hover { background: #2e6643; }
+
+/* ── 장착 모달 ──────────────────────────────── */
+.equip-modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(28,25,23,.5);
+  z-index: 400; align-items: center; justify-content: center;
+}
+.equip-modal-overlay.open { display: flex; }
+.equip-modal-card {
+  background: var(--surface); border-radius: var(--r); padding: 28px;
+  min-width: 280px; max-width: 380px; width: 90%;
+  box-shadow: var(--shadow2);
+}
+.equip-modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+.equip-char-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.equip-char-item {
+  padding: 10px 14px; border-radius: 8px; border: 1.5px solid var(--border);
+  cursor: pointer; transition: all .15s; font-size: .85rem;
+}
+.equip-char-item:hover { border-color: var(--green); background: var(--green-bg); }
+.equip-char-slot { font-size: .7rem; color: var(--text3); margin-top: 2px; }
+.equip-modal-cancel {
+  width: 100%; padding: 9px; border-radius: 8px; font-size: .82rem; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -744,10 +853,6 @@ body {
       <span class="mythic-icon">✦</span>
       <span id="mythic-amount">—</span>
     </div>
-    <div class="ticket-badge" id="ticket-badge">
-      <span class="ticket-icon">◈</span>
-      <span id="ticket-amount">—</span> 설정권
-    </div>
     <button class="nav-btn primary" onclick="location.href='maker.html'">+ 캐릭터 생성</button>
     <button class="nav-btn" onclick="handleLogout()">로그아웃</button>
   </div>
@@ -763,6 +868,7 @@ body {
       <button class="page-tab"        onclick="switchTab('upgrade', this)">강화</button>
       <button class="page-tab"        onclick="switchTab('shop', this)">상점</button>
       <button class="page-tab"        onclick="switchTab('forge', this)">대장간</button>
+      <button class="page-tab"        onclick="switchTab('inventory', this)">인벤토리</button>
     </div>
 
     <!-- 캐릭터 목록 패널 -->
@@ -797,10 +903,16 @@ body {
     <div class="page-panel" id="panel-forge">
       <div id="forge-materials-section"></div>
       <div class="forge-section">
-        <div class="forge-region-title">레시피 <span class="forge-region-badge">제작</span></div>
-        <div class="forge-recipe-placeholder">레시피가 준비 중입니다. 곧 업데이트 예정!</div>
+        <div class="forge-region-title">도구 제작 <span class="forge-region-badge">레시피</span></div>
+        <div id="forge-recipes-section"><div style="color:var(--text3);font-size:.8rem;padding:8px 0;">레시피를 불러오는 중...</div></div>
       </div>
     </div><!-- /panel-forge -->
+
+    <div class="page-panel" id="panel-inventory">
+      <div id="inventory-content">
+        <div style="text-align:center;padding:32px;color:var(--text3);">불러오는 중...</div>
+      </div>
+    </div><!-- /panel-inventory -->
 
   </div>
 
@@ -856,6 +968,9 @@ const token    = localStorage.getItem('access_token');
 const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
 
+// 재화 상태 (loadGold()가 갱신, 기능별 함수에서 읽음)
+let userResources = { gold: 0, mythic_light: 0, mastery_tickets: 0, enhance_tickets: 0, owned_tools: [] };
+
 if (!token) location.href = 'auth.html';
 
 document.getElementById('nav-username').textContent = username || '모험가';
@@ -873,12 +988,13 @@ async function loadGold() {
     }
     const data = await res.json();
     console.log('[gold] 응답:', data);
-    const amount = data.gold ?? 0;
-    document.getElementById('gold-amount').textContent = `${amount.toLocaleString()}G`;
-    const mythic = data.mythic_light ?? 0;
-    document.getElementById('mythic-amount').textContent = `${mythic.toLocaleString()}`;
-    const tickets = data.mastery_tickets ?? 0;
-    document.getElementById('ticket-amount').textContent = `${tickets}`;
+    userResources.gold             = data.gold             ?? 0;
+    userResources.mythic_light     = data.mythic_light     ?? 0;
+    userResources.mastery_tickets  = data.mastery_tickets  ?? 0;
+    userResources.enhance_tickets  = data.enhance_tickets  ?? 0;
+    userResources.owned_tools      = data.owned_tools      ?? [];
+    document.getElementById('gold-amount').textContent   = `${userResources.gold.toLocaleString()}G`;
+    document.getElementById('mythic-amount').textContent = `${userResources.mythic_light.toLocaleString()}`;
   } catch(e) {
     console.error('[gold] 오류:', e);
   }
@@ -890,9 +1006,10 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById(`panel-${tab}`).classList.add('active');
-  if (tab === 'upgrade') renderUpgradePanel();
-  if (tab === 'shop') renderShopPanel();
-  if (tab === 'forge') renderForgePanel();
+  if (tab === 'upgrade')    renderUpgradePanel();
+  if (tab === 'shop')       renderShopPanel();
+  if (tab === 'forge')      renderForgePanel();
+  if (tab === 'inventory')  renderInventoryPanel();
 }
 
 // ── 강화 패널 렌더 ────────────────────────────────────────────────────────────
@@ -956,9 +1073,8 @@ function renderUpgradePanel() {
          </div>`
       : `<div class="upgrade-action">
            <div class="upgrade-cost">
-             <span>G</span>
-             <span>${cost.toLocaleString()}G 필요</span>
-             <span style="font-size:.68rem;color:var(--text3);margin-left:4px;">(스탯 상한 +${cap - UPGRADE_STAT_CAP[stage]})</span>
+             <span>⚔ 강화권 3개 + ${cost.toLocaleString()}G</span>
+             <span style="font-size:.68rem;color:var(--text3);margin-left:6px;">(스탯 상한 +${cap - UPGRADE_STAT_CAP[stage]})</span>
            </div>
            <div style="display:flex;gap:6px;">
              <button class="upgrade-btn" style="background:#1a7a6e;font-size:.72rem;" onclick="openMasteryTune(${c.id})">마스터리 조율</button>
@@ -966,6 +1082,20 @@ function renderUpgradePanel() {
              <button class="upgrade-btn" onclick="doUpgrade(${c.id}, ${nextStage}, ${cost})">강화 ${nextStage}단계</button>
            </div>
          </div>`;
+
+    const equip = c.equipment || {};
+    const equipSlots = [
+      ['weapon','⚔','무기'], ['armor','🛡','방어구'], ['accessory','✦','장신구']
+    ].map(([slot, icon, label]) => {
+      const tid = equip[slot];
+      if (tid) {
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border:1px solid var(--green);border-radius:6px;background:var(--green-bg);font-size:.72rem;">
+          <span>${icon} <strong>${label}</strong>: ${EQUIP_TOOL_NAMES[tid]||tid}</span>
+          <button onclick="doUnequip(${c.id},'${slot}')" style="font-size:.65rem;padding:2px 8px;border-radius:4px;border:1px solid var(--accent);background:none;color:var(--accent);cursor:pointer;">해제</button>
+        </div>`;
+      }
+      return `<div style="padding:5px 8px;border:1px dashed var(--border);border-radius:6px;font-size:.72rem;color:var(--text3);">${icon} ${label}: —</div>`;
+    }).join('');
 
     return `
     <div class="upgrade-card" id="upgrade-card-${c.id}">
@@ -982,6 +1112,7 @@ function renderUpgradePanel() {
       </div>
       <div class="upgrade-stats">${statBoxes}</div>
       ${masteryGrid}
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;">${equipSlots}</div>
       ${actionArea}
     </div>`;
   }).join('');
@@ -989,9 +1120,10 @@ function renderUpgradePanel() {
 
 // ── 강화 실행 ────────────────────────────────────────────────────────────────
 async function doUpgrade(charId, nextStage, cost) {
-  const goldEl=document.getElementById('gold-amount');
-  const curGold=parseInt((goldEl.textContent||'0').replace(/[^0-9]/g,''))||0;
-  if(curGold<cost){showToast(`골드 부족 (${cost}G 필요 / ${curGold}G 보유)`);return;}
+  const curGold    = userResources.gold;
+  const curTickets = userResources.enhance_tickets;
+  if(curTickets < 3){ showToast(`강화권 부족 (3개 필요 / ${curTickets}개 보유)`); return; }
+  if(curGold < cost){ showToast(`골드 부족 (${cost}G 필요 / ${curGold}G 보유)`); return; }
   _upgradeCharId=charId;_upgradeNextStage=nextStage;_upgradeCost=cost;
   ['str','agi','int','wis'].forEach(s=>{
     document.getElementById(`slider-${s}`).value=0;
@@ -999,7 +1131,7 @@ async function doUpgrade(charId, nextStage, cost) {
   });
   document.getElementById('points-left').textContent=15;
   document.getElementById('upgrade-confirm-btn').disabled=true;
-  document.getElementById('upgrade-modal-title').textContent=`강화 ${nextStage}단계 — ${cost}G`;
+  document.getElementById('upgrade-modal-title').textContent=`강화 ${nextStage}단계 — 강화권 3개 + ${cost}G`;
   document.getElementById('upgrade-modal-overlay').classList.add('show');
 }
 
@@ -1076,6 +1208,21 @@ async function loadCharacters() {
 }
 
 // ── 렌더링 ──────────────────────────────────────────────────────────────────
+const EQUIP_TOOL_NAMES = {
+  wooden_bat:'방망이', leaf_shield:'깃털방패', lucky_charm:'행운부적',
+  mana_blade:'마력단검', crystal_armor:'수정갑옷', time_amulet:'시간아뮬렛',
+};
+function renderEquipBadges(c) {
+  const equip = c.equipment || {};
+  const slots = [['weapon','⚔'], ['armor','🛡'], ['accessory','✦']];
+  const badges = slots.map(([slot, icon]) => {
+    const tid = equip[slot];
+    if (!tid) return `<span style="font-size:.62rem;color:var(--text3);padding:1px 5px;border:1px dashed var(--border);border-radius:4px;">${icon} —</span>`;
+    return `<span style="font-size:.62rem;color:var(--green);padding:1px 5px;border:1px solid var(--green);border-radius:4px;background:var(--green-bg);">${icon} ${EQUIP_TOOL_NAMES[tid]||tid}</span>`;
+  }).join('');
+  return `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">${badges}</div>`;
+}
+
 function renderCharacters() {
   const grid = document.getElementById('char-grid');
   const cnt  = characters.length;
@@ -1132,6 +1279,7 @@ function renderCharacters() {
         <div class="char-hp-dot"></div>
         HP ${hp.toLocaleString()}
       </div>
+      ${renderEquipBadges(c)}
     </div>`;
   });
 
@@ -1429,7 +1577,7 @@ function openMasteryTune(charId) {
   const char = characters.find(c => c.id === charId);
   if (!char) return;
 
-  const tickets = parseInt(document.getElementById('ticket-amount').textContent) || 0;
+  const tickets = userResources.mastery_tickets;
   if (tickets < 1) { showToast('마스터리 설정권이 없습니다'); return; }
 
   _tuneCharId = charId;
@@ -1496,7 +1644,7 @@ async function confirmMasteryTune() {
     const data = await res.json();
     if (!res.ok) { showToast(data.detail || '조율 실패'); return; }
     showToast('✓ 마스터리 조율 완료');
-    document.getElementById('ticket-amount').textContent = `${data.mastery_tickets}`;
+    userResources.mastery_tickets = data.mastery_tickets ?? userResources.mastery_tickets - 1;
     await loadCharacters();
     renderUpgradePanel();
     closeMasteryTune();
@@ -1525,39 +1673,99 @@ async function renderShopPanel(){
   }).join('');
 }
 async function buyItem(itemId){
-  if(itemId==='recruit_enhance'){const r=characters.filter(c=>c.character_type==='recruited'&&(c.growth_stage||0)<2);if(!r.length){showToast('강화 가능한 영입 캐릭터 없음');return;}openEnhanceSelect(r);return;}
   const urls={
-    skill_scroll:`${API}/character/shop/buy/skill-scroll`,
-    recruit_ticket:`${API}/character/shop/buy/recruit-ticket`,
-    mastery_ticket:`${API}/character/shop/buy/mastery-ticket`,
+    skill_scroll:    `${API}/character/shop/buy/skill-scroll`,
+    recruit_ticket:  `${API}/character/shop/buy/recruit-ticket`,
+    mastery_ticket:  `${API}/character/shop/buy/mastery-ticket`,
+    recruit_enhance: `${API}/character/shop/buy/enhance-ticket`,
   };
   const url=urls[itemId];if(!url)return;
   try{const res=await fetch(url,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult(itemId,data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
 }
-function openEnhanceSelect(r){
-  document.getElementById('enhance-select-list').innerHTML=r.map(c=>`<div class="enhance-select-item" onclick="buyEnhance(${c.id})">${c.name} <span style="color:var(--text3);font-size:.68rem;">강화 ${c.growth_stage||0}/2단계</span></div>`).join('');
-  document.getElementById('enhance-select-overlay').classList.add('show');
-}
-async function buyEnhance(charId){
-  closeEnhanceSelect();
-  try{const res=await fetch(`${API}/character/shop/buy/recruit-enhance/${charId}`,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult('recruit_enhance',data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
-}
-function closeEnhanceSelect(){document.getElementById('enhance-select-overlay').classList.remove('show');}
 function showShopResult(itemId,data){
   const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈'};
   document.getElementById('shop-result-icon').textContent=data.duplicate?'🔄':(ICONS[itemId]||'🎁');
   document.getElementById('shop-result-title').textContent=data.duplicate?'중복!':'획득!';
   document.getElementById('shop-result-msg').textContent=data.message||'';
-  const mythicLine = data.mythic_light != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
-  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}`;
+  const mythicLine   = data.mythic_light   != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
+  const enhanceLine  = data.enhance_tickets != null ? `  ⚔ 강화권: ${data.enhance_tickets}개` : '';
+  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}${enhanceLine}`;
   document.getElementById('shop-result-overlay').classList.add('show');
 }
 function closeShopResult(){document.getElementById('shop-result-overlay').classList.remove('show');}
+
+// ── 인벤토리 ──────────────────────────────────────────────────────────────────
+async function renderInventoryPanel() {
+  await loadGold();  // 최신 수치 보장
+  const el = document.getElementById('inventory-content');
+  if (!el) return;
+
+  const CONSUMABLES = [
+    {
+      key:   'mastery_tickets',
+      icon:  '◈',
+      cls:   'inv-icon-mastery',
+      name:  '마스터리 설정권',
+      desc:  '마스터리 수치를 자유롭게 재배분합니다.\n강화 패널 → 마스터리 조율에서 사용.',
+    },
+    {
+      key:   'enhance_tickets',
+      icon:  '⚔',
+      cls:   'inv-icon-enhance',
+      name:  '캐릭터 강화권',
+      desc:  '캐릭터 강화에 필요합니다.\n강화 1단계: 3개 + 150G\n강화 2단계: 3개 + 300G',
+    },
+  ];
+
+  const cards = CONSUMABLES.map(item => {
+    const count = userResources[item.key] ?? 0;
+    return `
+    <div class="inv-card">
+      <div class="inv-card-hdr">
+        <div class="inv-card-icon ${item.cls}">${item.icon}</div>
+        <div class="inv-card-name">${item.name}</div>
+      </div>
+      <div class="inv-card-count">${count}<span>개</span></div>
+      <div class="inv-card-desc">${item.desc.replace(/\n/g, '<br>')}</div>
+    </div>`;
+  }).join('');
+
+  // 보유 도구 섹션
+  const TOOL_META = {
+    wooden_bat:    { name:'나무 방망이',   slot:'weapon',    slot_name:'무기',   bonus:'+15 고정 피해' },
+    leaf_shield:   { name:'깃털 방패',     slot:'armor',     slot_name:'방어구', bonus:'+30 HP' },
+    lucky_charm:   { name:'행운의 부적',   slot:'accessory', slot_name:'장신구', bonus:'+1 AP 회복' },
+    mana_blade:    { name:'마력 단검',     slot:'weapon',    slot_name:'무기',   bonus:'+30 고정 피해' },
+    crystal_armor: { name:'수정 갑옷',     slot:'armor',     slot_name:'방어구', bonus:'+60 HP' },
+    time_amulet:   { name:'시간의 아뮬렛', slot:'accessory', slot_name:'장신구', bonus:'+2 AP 회복' },
+  };
+  const toolCards = (userResources.owned_tools || []).map((tid, idx) => {
+    const t = TOOL_META[tid] || { name: tid, slot: 'weapon', slot_name: '무기', bonus: '' };
+    return `
+    <div class="inv-tool-card">
+      <div class="inv-tool-name">${t.name}</div>
+      <div class="inv-tool-slot ${t.slot}">${t.slot_name}</div>
+      ${t.bonus ? `<div class="inv-tool-bonus">${t.bonus}</div>` : ''}
+      <button class="inv-tool-equip-btn" onclick="openEquipModal('${tid}', ${idx})">장착하기</button>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="inv-section-title">소모품</div>
+    <div class="inv-grid">${cards}</div>
+    ${userResources.owned_tools?.length ? `
+    <div class="inv-tools-title">보유 도구</div>
+    <div class="inv-grid">${toolCards}</div>` : `
+    <div style="margin-top:16px;text-align:center;padding:24px;color:var(--text3);font-size:.82rem;border:1.5px dashed var(--border);border-radius:var(--r);">
+      보유 중인 도구가 없습니다. 대장간 탭에서 제작해보세요!
+    </div>`}`;
+}
 
 // ── 대장간 ────────────────────────────────────────────────────────────────────
 const REGION_NAMES = { '1': '기원의 쌍성', '2': '시간의 신전' };
 
 async function renderForgePanel() {
+  renderForgeRecipes();  // 레시피는 재료와 병렬로 시작
   const section = document.getElementById('forge-materials-section');
   if (!section) return;
   section.innerHTML = '<div style="color:var(--text3);font-size:.8rem;padding:8px 0;">재료 목록을 불러오는 중...</div>';
@@ -1609,7 +1817,175 @@ async function renderForgePanel() {
   }
 }
 
+// ── 레시피 렌더 ──────────────────────────────────────────────────────────────
+const TOOL_SLOT_NAMES = { weapon:'무기', armor:'방어구', accessory:'장신구' };
+
+async function renderForgeRecipes() {
+  const section = document.getElementById('forge-recipes-section');
+  if (!section) return;
+  try {
+    const [recRes, matRes] = await Promise.all([
+      fetch(`${API}/forge/recipes`, { headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' } }),
+      fetch(`${API}/forge/materials`, { headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' } }),
+    ]);
+    const { recipes } = await recRes.json();
+    const { materials } = await matRes.json();
+    const owned = {};
+    (materials || []).forEach(m => { owned[m.id] = m.count; });
+
+    if (!recipes.length) {
+      section.innerHTML = '<div class="forge-recipe-placeholder">레시피가 준비 중입니다. 곧 업데이트 예정!</div>';
+      return;
+    }
+
+    const cards = recipes.map(r => {
+      const ings = Object.entries(r.ingredients);
+      const canCraft = ings.every(([id, need]) => (owned[id] || 0) >= need);
+      const ingHtml = ings.map(([id, need]) => {
+        const have = owned[id] || 0;
+        const ok = have >= need;
+        const matName = (materials.find(m => m.id === id) || {}).name || id;
+        return `<span class="forge-recipe-ing ${ok ? 'ok' : 'bad'}">${matName} ${have}/${need}</span>`;
+      }).join('');
+      const tool = r.result_item_type === 'tool';
+      const bonusMap = {
+        wooden_bat:'+15 고정 피해', leaf_shield:'+30 HP', lucky_charm:'+1 AP 회복',
+        mana_blade:'+30 고정 피해', crystal_armor:'+60 HP', time_amulet:'+2 AP 회복',
+      };
+      const slotMap = {
+        wooden_bat:'weapon', leaf_shield:'armor', lucky_charm:'accessory',
+        mana_blade:'weapon', crystal_armor:'armor', time_amulet:'accessory',
+      };
+      const slot = slotMap[r.result_item_id] || '';
+      const slotName = TOOL_SLOT_NAMES[slot] || '';
+      const bonus = bonusMap[r.result_item_id] || '';
+      return `
+      <div class="forge-recipe-card ${canCraft ? 'craftable' : ''}">
+        <div class="forge-recipe-name">${r.result_item_name}</div>
+        ${slot ? `<div class="forge-recipe-slot ${slot}">${slotName}</div>` : ''}
+        ${bonus ? `<div class="forge-recipe-bonus">${bonus}</div>` : ''}
+        <div class="forge-recipe-ingredients">${ingHtml}</div>
+        <button class="forge-craft-btn ${canCraft ? 'active' : ''}"
+          ${canCraft ? `onclick="craftItem('${r.id}', '${r.result_item_name}')"` : 'disabled'}>
+          ${canCraft ? '제작하기' : '재료 부족'}
+        </button>
+      </div>`;
+    }).join('');
+
+    section.innerHTML = `<div class="forge-recipe-grid">${cards}</div>`;
+  } catch(e) {
+    section.innerHTML = '<div style="color:var(--text3);font-size:.8rem;">레시피를 불러오지 못했습니다.</div>';
+  }
+}
+
+async function craftItem(recipeId, itemName) {
+  try {
+    const res = await fetch(`${API}/forge/craft/${recipeId}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.detail || '제작 실패'); return; }
+    userResources.owned_tools = data.owned_tools || userResources.owned_tools;
+    showToast(`${itemName} 제작 완료!`);
+    renderForgeRecipes();  // 재료 수량 업데이트 반영
+  } catch(e) {
+    showToast('제작 중 오류 발생');
+  }
+}
+
+// ── 장비 장착 모달 ────────────────────────────────────────────────────────────
+let _equipToolId = null;
+let _equipToolIdx = null;
+
+function openEquipModal(toolId, idx) {
+  _equipToolId  = toolId;
+  _equipToolIdx = idx;
+  const TOOL_META = {
+    wooden_bat:    { name:'나무 방망이',   slot:'weapon' },
+    leaf_shield:   { name:'깃털 방패',     slot:'armor' },
+    lucky_charm:   { name:'행운의 부적',   slot:'accessory' },
+    mana_blade:    { name:'마력 단검',     slot:'weapon' },
+    crystal_armor: { name:'수정 갑옷',     slot:'armor' },
+    time_amulet:   { name:'시간의 아뮬렛', slot:'accessory' },
+  };
+  const t = TOOL_META[toolId] || { name: toolId, slot: 'weapon' };
+  document.getElementById('equip-modal-title').textContent = `${t.name} — 장착할 캐릭터 선택`;
+
+  const list = document.getElementById('equip-char-list');
+  if (!characters.length) {
+    list.innerHTML = '<div style="color:var(--text3);font-size:.82rem;">캐릭터가 없습니다.</div>';
+  } else {
+    list.innerHTML = characters.map(c => {
+      const equip = c.equipment || {};
+      const curTool = equip[t.slot];
+      const curLabel = curTool ? ` (현재: ${curTool})` : '';
+      return `
+      <div class="equip-char-item" onclick="doEquip(${c.id})">
+        <div>${c.name}</div>
+        <div class="equip-char-slot">${TOOL_SLOT_NAMES[t.slot] || t.slot} 슬롯${curLabel}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('equip-modal-overlay').classList.add('open');
+}
+
+function closeEquipModal() {
+  document.getElementById('equip-modal-overlay').classList.remove('open');
+  _equipToolId = null;
+  _equipToolIdx = null;
+}
+
+async function doEquip(charId) {
+  if (!_equipToolId) return;
+  try {
+    const res = await fetch(`${API}/character/${charId}/equip?tool_id=${_equipToolId}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.detail || '장착 실패'); return; }
+    userResources.owned_tools = data.owned_tools || [];
+    const char = characters.find(c => c.id === charId);
+    if (char) char.equipment = data.equipment;
+    closeEquipModal();
+    showToast('장착 완료!');
+    renderInventoryPanel();
+    renderCharacters();
+  } catch(e) {
+    showToast('장착 중 오류 발생');
+  }
+}
+
+async function doUnequip(charId, slot) {
+  try {
+    const res = await fetch(`${API}/character/${charId}/unequip/${slot}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.detail || '해제 실패'); return; }
+    userResources.owned_tools = data.owned_tools || [];
+    const char = characters.find(c => c.id === charId);
+    if (char) char.equipment = data.equipment;
+    showToast('해제 완료!');
+    renderUpgradePanel();
+    renderCharacters();
+  } catch(e) {
+    showToast('해제 중 오류 발생');
+  }
+}
+
 </script>
+<!-- 장비 장착 모달 -->
+<div class="equip-modal-overlay" id="equip-modal-overlay">
+  <div class="equip-modal-card">
+    <div class="equip-modal-title" id="equip-modal-title">장착할 캐릭터 선택</div>
+    <div class="equip-char-list" id="equip-char-list"></div>
+    <button class="equip-modal-cancel" onclick="closeEquipModal()">취소</button>
+  </div>
+</div>
+
 <!-- 강화 슬라이더 모달 -->
 <div class="upgrade-modal-overlay" id="upgrade-modal-overlay">
   <div class="upgrade-modal-card">
@@ -1632,13 +2008,6 @@ async function renderForgePanel() {
     <div class="shop-result-msg" id="shop-result-msg"></div>
     <div class="shop-result-gold" id="shop-result-gold"></div>
     <button class="shop-result-close" onclick="closeShopResult()">확인</button>
-  </div>
-</div>
-<div class="shop-result-overlay" id="enhance-select-overlay">
-  <div class="shop-result-card">
-    <div class="shop-result-title">강화할 캐릭터 선택</div>
-    <div class="enhance-select-list" id="enhance-select-list"></div>
-    <button class="shop-result-close" onclick="closeEnhanceSelect()" style="background:var(--text3);margin-top:8px;">취소</button>
   </div>
 </div>
 <!-- 마스터리 조율 모달 -->
