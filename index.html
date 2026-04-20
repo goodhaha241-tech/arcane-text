@@ -969,7 +969,7 @@ const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
 
 // 재화 상태 (loadGold()가 갱신, 기능별 함수에서 읽음)
-let userResources = { gold: 0, mythic_light: 0, mastery_tickets: 0, enhance_tickets: 0, owned_tools: [] };
+let userResources = { gold: 0, mythic_light: 0, mastery_tickets: 0, enhance_tickets: 0, owned_tools: [], tool_enhance_kits: 0, disassemble_kits: 0, creation_light: 0 };
 
 if (!token) location.href = 'auth.html';
 
@@ -992,7 +992,10 @@ async function loadGold() {
     userResources.mythic_light     = data.mythic_light     ?? 0;
     userResources.mastery_tickets  = data.mastery_tickets  ?? 0;
     userResources.enhance_tickets  = data.enhance_tickets  ?? 0;
-    userResources.owned_tools      = data.owned_tools      ?? [];
+    userResources.owned_tools        = data.owned_tools        ?? [];
+    userResources.tool_enhance_kits  = data.tool_enhance_kits  ?? 0;
+    userResources.disassemble_kits   = data.disassemble_kits   ?? 0;
+    userResources.creation_light     = data.creation_light     ?? 0;
     document.getElementById('gold-amount').textContent   = `${userResources.gold.toLocaleString()}G`;
     document.getElementById('mythic-amount').textContent = `${userResources.mythic_light.toLocaleString()}`;
   } catch(e) {
@@ -1087,10 +1090,14 @@ function renderUpgradePanel() {
     const equipSlots = [
       ['weapon','⚔','무기'], ['armor','🛡','방어구'], ['accessory','✦','장신구']
     ].map(([slot, icon, label]) => {
-      const tid = equip[slot];
-      if (tid) {
+      const raw = equip[slot];
+      if (raw) {
+        const inst = normTool(raw);
+        const baseName = (TOOL_BASE_INFO[inst.id] || {}).name || inst.id;
+        const lvlTag = inst.enhance_level > 0 ? ` +${inst.enhance_level}` : '';
+        const modTag = inst.modifier ? ` [${inst.modifier}]` : '';
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border:1px solid var(--green);border-radius:6px;background:var(--green-bg);font-size:.72rem;">
-          <span>${icon} <strong>${label}</strong>: ${EQUIP_TOOL_NAMES[tid]||tid}</span>
+          <span>${icon} <strong>${label}</strong>: ${baseName}${lvlTag}${modTag}</span>
           <button onclick="doUnequip(${c.id},'${slot}')" style="font-size:.65rem;padding:2px 8px;border-radius:4px;border:1px solid var(--accent);background:none;color:var(--accent);cursor:pointer;">해제</button>
         </div>`;
       }
@@ -1216,9 +1223,12 @@ function renderEquipBadges(c) {
   const equip = c.equipment || {};
   const slots = [['weapon','⚔'], ['armor','🛡'], ['accessory','✦']];
   const badges = slots.map(([slot, icon]) => {
-    const tid = equip[slot];
-    if (!tid) return `<span style="font-size:.62rem;color:var(--text3);padding:1px 5px;border:1px dashed var(--border);border-radius:4px;">${icon} —</span>`;
-    return `<span style="font-size:.62rem;color:var(--green);padding:1px 5px;border:1px solid var(--green);border-radius:4px;background:var(--green-bg);">${icon} ${EQUIP_TOOL_NAMES[tid]||tid}</span>`;
+    const raw = equip[slot];
+    if (!raw) return `<span style="font-size:.62rem;color:var(--text3);padding:1px 5px;border:1px dashed var(--border);border-radius:4px;">${icon} —</span>`;
+    const inst = normTool(raw);
+    const lvlTag = inst.enhance_level > 0 ? ` +${inst.enhance_level}` : '';
+    const display = (TOOL_BASE_INFO[inst.id] || {}).name || inst.id;
+    return `<span style="font-size:.62rem;color:var(--green);padding:1px 5px;border:1px solid var(--green);border-radius:4px;background:var(--green-bg);">${icon} ${display}${lvlTag}</span>`;
   }).join('');
   return `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">${badges}</div>`;
 }
@@ -1665,8 +1675,8 @@ async function renderShopPanel(){
     try{const res=await fetch(`${API}/character/shop/items`,{headers:{'ngrok-skip-browser-warning':'1'}});const data=await res.json();shopItems=data.items||[];}
     catch{grid.innerHTML='<div style="color:var(--red)">상점 로드 실패</div>';return;}
   }
-  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈'};
-  const IC={'skill_scroll':'shop-icon-scroll','recruit_ticket':'shop-icon-recruit','recruit_enhance':'shop-icon-enhance','mastery_ticket':'shop-icon-mastery'};
+  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈','disassemble_kit':'⚗'};
+  const IC={'skill_scroll':'shop-icon-scroll','recruit_ticket':'shop-icon-recruit','recruit_enhance':'shop-icon-enhance','mastery_ticket':'shop-icon-mastery','disassemble_kit':'shop-icon-enhance'};
   grid.innerHTML=shopItems.map(item=>{
     const mythicTag=item.mythic_cost?`<span style="color:#6c3fc1;font-weight:700;">✦ ${item.mythic_cost}</span> + `:'';
     return `<div class="shop-card"><div class="shop-card-hdr"><div class="shop-icon ${IC[item.id]||''}">${ICONS[item.id]||'🛒'}</div><div><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div></div></div><div class="shop-item-footer"><div class="shop-price">${mythicTag}${item.price.toLocaleString()}G${item.refund_dup?`<span class="shop-refund">(중복 ${item.refund_dup}G 반환)</span>`:''}</div><button class="shop-buy-btn" onclick="buyItem('${item.id}')">구매</button></div></div>`;
@@ -1678,43 +1688,67 @@ async function buyItem(itemId){
     recruit_ticket:  `${API}/character/shop/buy/recruit-ticket`,
     mastery_ticket:  `${API}/character/shop/buy/mastery-ticket`,
     recruit_enhance: `${API}/character/shop/buy/enhance-ticket`,
+    disassemble_kit: `${API}/character/shop/buy/disassemble-kit`,
   };
   const url=urls[itemId];if(!url)return;
-  try{const res=await fetch(url,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult(itemId,data);await loadGold();await loadCharacters();}catch{showToast('서버 오류');}
+  try{const res=await fetch(url,{method:'POST',headers:{'Authorization':`Bearer ${token}`,'ngrok-skip-browser-warning':'1'}});const data=await res.json();if(!res.ok){showToast(data.detail||'구매 실패');return;}showShopResult(itemId,data);await loadGold();}catch{showToast('서버 오류');}
 }
 function showShopResult(itemId,data){
-  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈'};
+  const ICONS={'skill_scroll':'📜','recruit_ticket':'✨','recruit_enhance':'⚡','mastery_ticket':'◈','disassemble_kit':'⚗'};
   document.getElementById('shop-result-icon').textContent=data.duplicate?'🔄':(ICONS[itemId]||'🎁');
   document.getElementById('shop-result-title').textContent=data.duplicate?'중복!':'획득!';
   document.getElementById('shop-result-msg').textContent=data.message||'';
-  const mythicLine   = data.mythic_light   != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
+  const mythicLine   = data.mythic_light    != null ? `  ✦ 신화의 빛: ${data.mythic_light}개` : '';
   const enhanceLine  = data.enhance_tickets != null ? `  ⚔ 강화권: ${data.enhance_tickets}개` : '';
-  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}${enhanceLine}`;
+  const disassLine   = data.disassemble_kits!= null ? `  ⚗ 분해 키트: ${data.disassemble_kits}개` : '';
+  document.getElementById('shop-result-gold').textContent=`보유 골드: ${(data.gold||0).toLocaleString()}G${mythicLine}${enhanceLine}${disassLine}`;
   document.getElementById('shop-result-overlay').classList.add('show');
 }
 function closeShopResult(){document.getElementById('shop-result-overlay').classList.remove('show');}
 
 // ── 인벤토리 ──────────────────────────────────────────────────────────────────
+const TOOL_BASE_INFO = {
+  wooden_bat:    { name:'나무 방망이',   slot:'weapon',    slot_name:'무기',   base:'+15 고정 피해' },
+  leaf_shield:   { name:'깃털 방패',     slot:'armor',     slot_name:'방어구', base:'+30 HP' },
+  lucky_charm:   { name:'행운의 부적',   slot:'accessory', slot_name:'장신구', base:'+1 AP 회복' },
+  mana_blade:    { name:'마력 단검',     slot:'weapon',    slot_name:'무기',   base:'+30 고정 피해' },
+  crystal_armor: { name:'수정 갑옷',     slot:'armor',     slot_name:'방어구', base:'+60 HP' },
+  time_amulet:   { name:'시간의 아뮬렛', slot:'accessory', slot_name:'장신구', base:'+2 AP 회복' },
+};
+
+function normTool(t) {
+  if (typeof t === 'string') return { id: t, enhance_level: 0, modifier: null, bonus_flat_dmg: 0, bonus_hp: 0, bonus_ap_regen: 0 };
+  return t;
+}
+
+function toolDisplayName(inst) {
+  const meta = TOOL_BASE_INFO[inst.id] || { name: inst.id };
+  return inst.modifier ? `[${inst.modifier}] ${meta.name}` : meta.name;
+}
+
+function toolBonusLine(inst) {
+  const meta = TOOL_BASE_INFO[inst.id];
+  if (!meta) return '';
+  const parts = [meta.base];
+  if (inst.bonus_flat_dmg > 0) parts.push(`+${inst.bonus_flat_dmg} 고정피해`);
+  if (inst.bonus_hp > 0)       parts.push(`+${inst.bonus_hp} HP`);
+  if (inst.bonus_ap_regen > 0) parts.push(`+${inst.bonus_ap_regen} AP회복`);
+  const MOD_BONUS = { '파괴의':'+20 고정피해', '생명의':'+50 HP', '신속의':'+1 AP회복', '균형의':'+10 고정피해 +20 HP', '집중의':'+10 고정피해 +1 AP회복' };
+  if (inst.modifier && MOD_BONUS[inst.modifier]) parts.push(MOD_BONUS[inst.modifier]);
+  return parts.join(' · ');
+}
+
 async function renderInventoryPanel() {
-  await loadGold();  // 최신 수치 보장
+  await loadGold();
   const el = document.getElementById('inventory-content');
   if (!el) return;
 
   const CONSUMABLES = [
-    {
-      key:   'mastery_tickets',
-      icon:  '◈',
-      cls:   'inv-icon-mastery',
-      name:  '마스터리 설정권',
-      desc:  '마스터리 수치를 자유롭게 재배분합니다.\n강화 패널 → 마스터리 조율에서 사용.',
-    },
-    {
-      key:   'enhance_tickets',
-      icon:  '⚔',
-      cls:   'inv-icon-enhance',
-      name:  '캐릭터 강화권',
-      desc:  '캐릭터 강화에 필요합니다.\n강화 1단계: 3개 + 150G\n강화 2단계: 3개 + 300G',
-    },
+    { key:'mastery_tickets',   icon:'◈', cls:'inv-icon-mastery', name:'마스터리 설정권',  desc:'마스터리 수치를 자유롭게 재배분합니다.\n강화 패널 → 마스터리 조율에서 사용.' },
+    { key:'enhance_tickets',   icon:'⚔', cls:'inv-icon-enhance', name:'캐릭터 강화권',    desc:'캐릭터 강화에 필요합니다.\n강화 1단계: 3개 + 150G\n강화 2단계: 3개 + 300G' },
+    { key:'tool_enhance_kits', icon:'✦', cls:'inv-icon-mastery', name:'도구 강화 키트',   desc:'도구를 강화합니다. 최대 +3단계.\n+3 달성 시 랜덤 수식어가 부여됩니다.' },
+    { key:'disassemble_kits',  icon:'⚗', cls:'inv-icon-enhance', name:'도구 분해 키트',   desc:'도구를 분해해 창조의 빛을 획득합니다.\n강화 수치에 비례: 기본 1 + 강화×2' },
+    { key:'creation_light',    icon:'✵', cls:'inv-icon-mastery', name:'창조의 빛',        desc:'도구 분해로 얻는 특수 재화입니다.\n향후 특별 레시피에 사용될 예정입니다.' },
   ];
 
   const cards = CONSUMABLES.map(item => {
@@ -1730,30 +1764,36 @@ async function renderInventoryPanel() {
     </div>`;
   }).join('');
 
-  // 보유 도구 섹션
-  const TOOL_META = {
-    wooden_bat:    { name:'나무 방망이',   slot:'weapon',    slot_name:'무기',   bonus:'+15 고정 피해' },
-    leaf_shield:   { name:'깃털 방패',     slot:'armor',     slot_name:'방어구', bonus:'+30 HP' },
-    lucky_charm:   { name:'행운의 부적',   slot:'accessory', slot_name:'장신구', bonus:'+1 AP 회복' },
-    mana_blade:    { name:'마력 단검',     slot:'weapon',    slot_name:'무기',   bonus:'+30 고정 피해' },
-    crystal_armor: { name:'수정 갑옷',     slot:'armor',     slot_name:'방어구', bonus:'+60 HP' },
-    time_amulet:   { name:'시간의 아뮬렛', slot:'accessory', slot_name:'장신구', bonus:'+2 AP 회복' },
-  };
-  const toolCards = (userResources.owned_tools || []).map((tid, idx) => {
-    const t = TOOL_META[tid] || { name: tid, slot: 'weapon', slot_name: '무기', bonus: '' };
+  const MAX_LVL = 3;
+  const toolCards = (userResources.owned_tools || []).map((raw, idx) => {
+    const inst = normTool(raw);
+    const meta = TOOL_BASE_INFO[inst.id] || { name: inst.id, slot: 'weapon', slot_name: '무기', base: '' };
+    const lvl  = inst.enhance_level || 0;
+    const canEnhance = lvl < MAX_LVL && (userResources.tool_enhance_kits || 0) > 0;
+    const canDisassemble = (userResources.disassemble_kits || 0) > 0;
+    const lvlDots = [0,1,2,3].map(i => `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:2px;background:${i < lvl ? 'var(--green)' : 'var(--border)'};"></span>`).join('');
+    const modTag = inst.modifier ? `<span style="font-size:.65rem;padding:1px 6px;border-radius:8px;background:#f5f0ff;color:#7c3fc8;border:1px solid #c8a8f0;margin-bottom:4px;display:inline-block;">${inst.modifier}</span>` : '';
     return `
     <div class="inv-tool-card">
-      <div class="inv-tool-name">${t.name}</div>
-      <div class="inv-tool-slot ${t.slot}">${t.slot_name}</div>
-      ${t.bonus ? `<div class="inv-tool-bonus">${t.bonus}</div>` : ''}
-      <button class="inv-tool-equip-btn" onclick="openEquipModal('${tid}', ${idx})">장착하기</button>
+      <div class="inv-tool-name">${toolDisplayName(inst)}</div>
+      ${modTag}
+      <div class="inv-tool-slot ${meta.slot}">${meta.slot_name}</div>
+      <div class="inv-tool-bonus">${toolBonusLine(inst)}</div>
+      <div style="margin:4px 0 8px;">${lvlDots}<span style="font-size:.65rem;color:var(--text3);margin-left:4px;">+${lvl}/${MAX_LVL}</span></div>
+      <div style="display:flex;gap:6px;">
+        <button class="inv-tool-equip-btn" style="flex:1;" onclick="openEquipModal(${idx})">장착</button>
+        <button style="flex:1;padding:6px;border-radius:6px;font-size:.72rem;font-weight:600;border:1.5px solid ${canEnhance ? 'var(--gold)' : 'var(--border)'};background:${canEnhance ? 'var(--gold-bg)' : 'var(--bg2)'};color:${canEnhance ? 'var(--gold)' : 'var(--text3)'};cursor:${canEnhance ? 'pointer' : 'not-allowed'};"
+          ${canEnhance ? `onclick="doEnhanceTool(${idx})"` : 'disabled'}>강화</button>
+        <button style="flex:1;padding:6px;border-radius:6px;font-size:.72rem;font-weight:600;border:1.5px solid ${canDisassemble ? 'var(--accent)' : 'var(--border)'};background:${canDisassemble ? '#fff5f2' : 'var(--bg2)'};color:${canDisassemble ? 'var(--accent)' : 'var(--text3)'};cursor:${canDisassemble ? 'pointer' : 'not-allowed'};"
+          ${canDisassemble ? `onclick="doDisassembleTool(${idx})"` : 'disabled'}>분해</button>
+      </div>
     </div>`;
   }).join('');
 
   el.innerHTML = `
     <div class="inv-section-title">소모품</div>
     <div class="inv-grid">${cards}</div>
-    ${userResources.owned_tools?.length ? `
+    ${(userResources.owned_tools || []).length ? `
     <div class="inv-tools-title">보유 도구</div>
     <div class="inv-grid">${toolCards}</div>` : `
     <div style="margin-top:16px;text-align:center;padding:24px;color:var(--text3);font-size:.82rem;border:1.5px dashed var(--border);border-radius:var(--r);">
@@ -1838,36 +1878,40 @@ async function renderForgeRecipes() {
       return;
     }
 
+    const canAffordGold = (cost) => (userResources.gold || 0) >= cost;
+
     const cards = recipes.map(r => {
       const ings = Object.entries(r.ingredients);
-      const canCraft = ings.every(([id, need]) => (owned[id] || 0) >= need);
+      const matOk = ings.every(([id, need]) => (owned[id] || 0) >= need);
+      const goldOk = r.gold_cost === 0 || canAffordGold(r.gold_cost);
+      const canCraft = matOk && goldOk;
       const ingHtml = ings.map(([id, need]) => {
         const have = owned[id] || 0;
         const ok = have >= need;
         const matName = (materials.find(m => m.id === id) || {}).name || id;
         return `<span class="forge-recipe-ing ${ok ? 'ok' : 'bad'}">${matName} ${have}/${need}</span>`;
       }).join('');
-      const tool = r.result_item_type === 'tool';
-      const bonusMap = {
-        wooden_bat:'+15 고정 피해', leaf_shield:'+30 HP', lucky_charm:'+1 AP 회복',
-        mana_blade:'+30 고정 피해', crystal_armor:'+60 HP', time_amulet:'+2 AP 회복',
-      };
-      const slotMap = {
-        wooden_bat:'weapon', leaf_shield:'armor', lucky_charm:'accessory',
-        mana_blade:'weapon', crystal_armor:'armor', time_amulet:'accessory',
-      };
+      const isTool = r.result_item_type === 'tool';
+      const isKit  = r.result_item_type === 'enhance_kit';
+      const slotMap = { wooden_bat:'weapon', leaf_shield:'armor', lucky_charm:'accessory', mana_blade:'weapon', crystal_armor:'armor', time_amulet:'accessory' };
+      const bonusMap = { wooden_bat:'+15 고정 피해', leaf_shield:'+30 HP', lucky_charm:'+1 AP 회복', mana_blade:'+30 고정 피해', crystal_armor:'+60 HP', time_amulet:'+2 AP 회복' };
       const slot = slotMap[r.result_item_id] || '';
       const slotName = TOOL_SLOT_NAMES[slot] || '';
       const bonus = bonusMap[r.result_item_id] || '';
+      const goldTag = r.gold_cost > 0 ? `<div style="font-size:.72rem;color:${goldOk ? 'var(--gold)' : 'var(--accent)'};font-weight:600;margin-bottom:6px;">💰 ${r.gold_cost.toLocaleString()}G ${goldOk ? '' : '(부족)'}</div>` : '';
+      const kitTag  = isKit ? `<div class="forge-recipe-slot accessory">도구 강화 키트</div>` : '';
+      const reasonBtn = !matOk ? '재료 부족' : !goldOk ? '골드 부족' : '제작하기';
       return `
       <div class="forge-recipe-card ${canCraft ? 'craftable' : ''}">
         <div class="forge-recipe-name">${r.result_item_name}</div>
-        ${slot ? `<div class="forge-recipe-slot ${slot}">${slotName}</div>` : ''}
+        ${isTool && slot ? `<div class="forge-recipe-slot ${slot}">${slotName}</div>` : ''}
+        ${kitTag}
         ${bonus ? `<div class="forge-recipe-bonus">${bonus}</div>` : ''}
+        ${goldTag}
         <div class="forge-recipe-ingredients">${ingHtml}</div>
         <button class="forge-craft-btn ${canCraft ? 'active' : ''}"
           ${canCraft ? `onclick="craftItem('${r.id}', '${r.result_item_name}')"` : 'disabled'}>
-          ${canCraft ? '제작하기' : '재료 부족'}
+          ${reasonBtn}
         </button>
       </div>`;
     }).join('');
@@ -1886,44 +1930,41 @@ async function craftItem(recipeId, itemName) {
     });
     const data = await res.json();
     if (!res.ok) { showToast(data.detail || '제작 실패'); return; }
-    userResources.owned_tools = data.owned_tools || userResources.owned_tools;
-    showToast(`${itemName} 제작 완료!`);
-    renderForgeRecipes();  // 재료 수량 업데이트 반영
+    if (data.owned_tools != null)      userResources.owned_tools       = data.owned_tools;
+    if (data.tool_enhance_kits != null) userResources.tool_enhance_kits = data.tool_enhance_kits;
+    if (data.gold != null)             userResources.gold              = data.gold;
+    document.getElementById('gold-amount').textContent = `${userResources.gold.toLocaleString()}G`;
+    showToast(`${itemName} 제작 완료!${data.gold_cost > 0 ? ` (${data.gold_cost}G 소모)` : ''}`);
+    renderForgeRecipes();
   } catch(e) {
     showToast('제작 중 오류 발생');
   }
 }
 
 // ── 장비 장착 모달 ────────────────────────────────────────────────────────────
-let _equipToolId = null;
 let _equipToolIdx = null;
 
-function openEquipModal(toolId, idx) {
-  _equipToolId  = toolId;
+function openEquipModal(idx) {
   _equipToolIdx = idx;
-  const TOOL_META = {
-    wooden_bat:    { name:'나무 방망이',   slot:'weapon' },
-    leaf_shield:   { name:'깃털 방패',     slot:'armor' },
-    lucky_charm:   { name:'행운의 부적',   slot:'accessory' },
-    mana_blade:    { name:'마력 단검',     slot:'weapon' },
-    crystal_armor: { name:'수정 갑옷',     slot:'armor' },
-    time_amulet:   { name:'시간의 아뮬렛', slot:'accessory' },
-  };
-  const t = TOOL_META[toolId] || { name: toolId, slot: 'weapon' };
-  document.getElementById('equip-modal-title').textContent = `${t.name} — 장착할 캐릭터 선택`;
+  const inst = normTool((userResources.owned_tools || [])[idx] || {});
+  const meta = TOOL_BASE_INFO[inst.id] || { name: inst.id, slot: 'weapon' };
+  const displayName = toolDisplayName(inst);
+  document.getElementById('equip-modal-title').textContent = `${displayName} — 장착할 캐릭터 선택`;
 
+  const inst = normTool((userResources.owned_tools || [])[idx] || {});
+  const meta = TOOL_BASE_INFO[inst.id] || { name: inst.id, slot: 'weapon' };
   const list = document.getElementById('equip-char-list');
   if (!characters.length) {
     list.innerHTML = '<div style="color:var(--text3);font-size:.82rem;">캐릭터가 없습니다.</div>';
   } else {
     list.innerHTML = characters.map(c => {
-      const equip = c.equipment || {};
-      const curTool = equip[t.slot];
-      const curLabel = curTool ? ` (현재: ${curTool})` : '';
+      const equip  = c.equipment || {};
+      const curInst = equip[meta.slot] ? normTool(equip[meta.slot]) : null;
+      const curLabel = curInst ? ` (현재: ${toolDisplayName(curInst)})` : '';
       return `
       <div class="equip-char-item" onclick="doEquip(${c.id})">
         <div>${c.name}</div>
-        <div class="equip-char-slot">${TOOL_SLOT_NAMES[t.slot] || t.slot} 슬롯${curLabel}</div>
+        <div class="equip-char-slot">${TOOL_SLOT_NAMES[meta.slot] || meta.slot} 슬롯${curLabel}</div>
       </div>`;
     }).join('');
   }
@@ -1932,14 +1973,13 @@ function openEquipModal(toolId, idx) {
 
 function closeEquipModal() {
   document.getElementById('equip-modal-overlay').classList.remove('open');
-  _equipToolId = null;
   _equipToolIdx = null;
 }
 
 async function doEquip(charId) {
-  if (!_equipToolId) return;
+  if (_equipToolIdx == null) return;
   try {
-    const res = await fetch(`${API}/character/${charId}/equip?tool_id=${_equipToolId}`, {
+    const res = await fetch(`${API}/character/${charId}/equip?tool_index=${_equipToolIdx}`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
     });
@@ -1954,6 +1994,43 @@ async function doEquip(charId) {
     renderCharacters();
   } catch(e) {
     showToast('장착 중 오류 발생');
+  }
+}
+
+async function doEnhanceTool(idx) {
+  try {
+    const res = await fetch(`${API}/forge/enhance?tool_index=${idx}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.detail || '강화 실패'); return; }
+    userResources.owned_tools      = data.owned_tools      || userResources.owned_tools;
+    userResources.tool_enhance_kits= data.tool_enhance_kits ?? userResources.tool_enhance_kits;
+    showToast(data.detail || '강화 완료!');
+    renderInventoryPanel();
+    renderCharacters();
+  } catch(e) {
+    showToast('강화 중 오류 발생');
+  }
+}
+
+async function doDisassembleTool(idx) {
+  if (!confirm('정말 이 도구를 분해하시겠습니까? 되돌릴 수 없습니다.')) return;
+  try {
+    const res = await fetch(`${API}/forge/disassemble?tool_index=${idx}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': '1' },
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.detail || '분해 실패'); return; }
+    userResources.owned_tools    = data.owned_tools    || userResources.owned_tools;
+    userResources.creation_light = data.creation_light ?? userResources.creation_light;
+    userResources.disassemble_kits = data.disassemble_kits ?? userResources.disassemble_kits;
+    showToast(data.detail || '분해 완료!');
+    renderInventoryPanel();
+  } catch(e) {
+    showToast('분해 중 오류 발생');
   }
 }
 
