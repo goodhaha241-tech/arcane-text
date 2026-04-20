@@ -732,7 +732,16 @@ body {
   font-family: 'Cinzel', serif; font-size: .82rem; font-weight: 600;
   letter-spacing: .05em; color: var(--text); margin-bottom: 12px;
   padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
 }
+.forge-region-title:hover { color: var(--accent); }
+.forge-chevron {
+  margin-left: auto; font-size: .7rem; color: var(--text3);
+  transition: transform .2s;
+}
+.forge-section.collapsed .forge-chevron { transform: rotate(-90deg); }
+.forge-section.collapsed .forge-mat-grid,
+.forge-section.collapsed .forge-recipe-grid { display: none; }
 .forge-region-badge {
   font-size: .62rem; padding: 2px 8px; border-radius: 10px;
   font-weight: 700; background: var(--bg2); color: var(--text3);
@@ -919,7 +928,7 @@ body {
     <div class="page-panel" id="panel-forge">
       <div id="forge-materials-section"></div>
       <div class="forge-section">
-        <div class="forge-region-title">도구 제작 <span class="forge-region-badge">레시피</span></div>
+        <div class="forge-region-title" onclick="toggleForgeSection(this)">도구 제작 <span class="forge-region-badge">레시피</span><span class="forge-chevron">▼</span></div>
         <div id="forge-recipes-section"><div style="color:var(--text3);font-size:.8rem;padding:8px 0;">레시피를 불러오는 중...</div></div>
       </div>
     </div><!-- /panel-forge -->
@@ -1821,7 +1830,15 @@ async function renderInventoryPanel() {
 }
 
 // ── 대장간 ────────────────────────────────────────────────────────────────────
-const REGION_NAMES = { '1': '기원의 쌍성', '2': '시간의 신전' };
+function toggleForgeSection(titleEl) {
+  titleEl.closest('.forge-section').classList.toggle('collapsed');
+}
+
+const REGION_NAMES = {
+  '1': '기원의 쌍성', '2': '시간의 신전',
+  '3': '일한산 중턱', '4': '이루지 못한 꿈들의 별',
+  '5': '생명의 숲', '6': '아르카워드 제도', '7': '공간의 신전',
+};
 
 async function renderForgePanel() {
   renderForgeRecipes();  // 레시피는 재료와 병렬로 시작
@@ -1865,8 +1882,9 @@ async function renderForgePanel() {
       const regionName = REGION_NAMES[rid] || `지역 ${rid}`;
       return `
       <div class="forge-section">
-        <div class="forge-region-title">
+        <div class="forge-region-title" onclick="toggleForgeSection(this)">
           ${regionName} <span class="forge-region-badge">지역 ${rid}</span>
+          <span class="forge-chevron">▼</span>
         </div>
         <div class="forge-mat-grid">${cards}</div>
       </div>`;
