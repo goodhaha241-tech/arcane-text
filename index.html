@@ -1736,12 +1736,34 @@ function closeShopResult(){document.getElementById('shop-result-overlay').classL
 
 // ── 인벤토리 ──────────────────────────────────────────────────────────────────
 const TOOL_BASE_INFO = {
-  wooden_bat:    { name:'나무 방망이',   slot:'weapon',    slot_name:'무기',   base:'+15 고정 피해' },
-  leaf_shield:   { name:'깃털 방패',     slot:'armor',     slot_name:'방어구', base:'+30 HP' },
-  lucky_charm:   { name:'행운의 부적',   slot:'accessory', slot_name:'장신구', base:'+1 AP 회복' },
-  mana_blade:    { name:'마력 단검',     slot:'weapon',    slot_name:'무기',   base:'+30 고정 피해' },
-  crystal_armor: { name:'수정 갑옷',     slot:'armor',     slot_name:'방어구', base:'+60 HP' },
-  time_amulet:   { name:'시간의 아뮬렛', slot:'accessory', slot_name:'장신구', base:'+2 AP 회복' },
+  // 지역 1 — 기원의 쌍성
+  wooden_bat:         { name:'나무 방망이',     slot:'weapon',    slot_name:'무기',   base:'+15 고정 피해',  passive:'전투 첫 번째 공격 피해 +60% [초격]' },
+  leaf_shield:        { name:'깃털 방패',       slot:'armor',     slot_name:'방어구', base:'+30 HP',         passive:'방어 행동 후 HP 4% 회복 [깃털 치유]' },
+  lucky_charm:        { name:'행운의 부적',     slot:'accessory', slot_name:'장신구', base:'+1 AP 회복',     passive:'매 턴 30% 확률로 AP +1 [행운의 작동]' },
+  // 지역 2 — 시간의 신전
+  mana_blade:         { name:'마력 단검',       slot:'weapon',    slot_name:'무기',   base:'+30 고정 피해',  passive:'AP 3+ 스킬 공격 후 다음 턴 AP +1 [마력 집중]' },
+  crystal_armor:      { name:'수정 갑옷',       slot:'armor',     slot_name:'방어구', base:'+60 HP',         passive:'짝수 턴 시작 시 HP 5% 자동 회복 [수정의 주기]' },
+  time_amulet:        { name:'시간의 아뮬렛',   slot:'accessory', slot_name:'장신구', base:'+2 AP 회복',     passive:'매 턴 상태이상 지속 1 추가 감소 [시간 역행]' },
+  // 지역 3 — 일한산 중턱
+  wolf_claw_axe:      { name:'늑대발톱 도끼',   slot:'weapon',    slot_name:'무기',   base:'+45 고정 피해',  passive:'피해를 받으면 다음 공격 +35% [늑대의 분노]' },
+  frost_plate:        { name:'서리 갑판',       slot:'armor',     slot_name:'방어구', base:'+90 HP',         passive:'받는 피해 12% 고정 감소 [서리 경화]' },
+  cold_ring:          { name:'냉기 반지',       slot:'accessory', slot_name:'장신구', base:'+2 AP 회복',     passive:'회피 성공 후 다음 스킬 AP -1 [냉기의 기민함]' },
+  // 지역 4 — 이루지 못한 꿈들의 별
+  nightmare_dagger:   { name:'악몽의 단검',     slot:'weapon',    slot_name:'무기',   base:'+65 고정 피해',  passive:'상태이상 있는 적 공격 시 피해 +35% [악몽 착취]' },
+  dream_shield:       { name:'꿈의 방패',       slot:'armor',     slot_name:'방어구', base:'+130 HP',        passive:'HP 30% 이하 시 받는 피해 -25% [꿈속의 집념]' },
+  star_ornament:      { name:'별 장식품',       slot:'accessory', slot_name:'장신구', base:'+2 AP 회복',     passive:'2회 연속 공격 후 다음 공격 +25% [별의 연속]' },
+  // 지역 5 — 생명의 숲
+  vine_whip:          { name:'덩굴 채찍',       slot:'weapon',    slot_name:'무기',   base:'+85 고정 피해',  passive:'공격 피해의 12% HP 흡수 [덩굴 흡혈]' },
+  bark_armor:         { name:'수피 갑옷',       slot:'armor',     slot_name:'방어구', base:'+170 HP',        passive:'HP 50% 초과 시 받는 피해 -10% [수피 강화]' },
+  life_stone:         { name:'생명석',          slot:'accessory', slot_name:'장신구', base:'+3 AP 회복',     passive:'3턴마다 HP 8% 회복 [생명의 박동]' },
+  // 지역 6 — 아르카워드 제도
+  sky_lance:          { name:'창공의 창',       slot:'weapon',    slot_name:'무기',   base:'+110 고정 피해', passive:'범위 스킬 피해 +25% [창공의 관통]' },
+  cloud_mantle:       { name:'구름 망토',       slot:'armor',     slot_name:'방어구', base:'+220 HP',        passive:'15% 확률로 피해 완전 회피 [구름의 장막]' },
+  wind_crest:         { name:'바람의 문장',     slot:'accessory', slot_name:'장신구', base:'+3 AP 회복',     passive:'방어/회피 후 다음 턴 AP 회복 +2 [바람의 가속]' },
+  // 지역 7 — 공간의 신전
+  void_blade:         { name:'공허의 검',       slot:'weapon',    slot_name:'무기',   base:'+140 고정 피해', passive:'적 방어 상태 무시 — 100% 피해 적용 [방어 관통]' },
+  space_shroud:       { name:'공간 두건',       slot:'armor',     slot_name:'방어구', base:'+280 HP',        passive:'치명타 1회 무효화, 전투당 1회 [공간 차단]' },
+  dimension_gem:      { name:'차원석',          slot:'accessory', slot_name:'장신구', base:'+4 AP 회복',     passive:'5턴마다 AP 최대치로 완전 충전 [차원 에너지]' },
 };
 
 function normTool(t) {
@@ -1763,6 +1785,7 @@ function toolBonusLine(inst) {
   if (inst.bonus_ap_regen > 0) parts.push(`+${inst.bonus_ap_regen} AP회복`);
   const MOD_BONUS = { '파괴의':'+20 고정피해', '생명의':'+50 HP', '신속의':'+1 AP회복', '균형의':'+10 고정피해 +20 HP', '집중의':'+10 고정피해 +1 AP회복' };
   if (inst.modifier && MOD_BONUS[inst.modifier]) parts.push(MOD_BONUS[inst.modifier]);
+  if (meta.passive) parts.push(`◆ ${meta.passive}`);
   return parts.join(' · ');
 }
 
